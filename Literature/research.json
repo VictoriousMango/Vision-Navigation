@@ -1,0 +1,2106 @@
+{
+  "Affine-ORB": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [
+        "Keyframe loss rate significantly reduced from 0.5 % to 0.2 %",
+        "Root mean square error (RMSE) of the running trajectory drastically reduced",
+        "Key frame extraction speed is faster",
+        "Keyframe loss rate is lower at the same moving speed",
+        "Positioning accuracy is higher",
+        "Takes advantage of more keyframes and lower keyframe losing rate under constant moving speed",
+        "Robust feature extraction and accurate positioning",
+        "Number of feature points and keyframe acquiring is increased",
+        "Reliability of the front-end visual odometry of the SLAM system is enhanced",
+        "Accuracy of positioning and mapping is improved by applying the mathematical method of affine transformation to ORB feature extraction"
+      ],
+      "cons": []
+    }
+  },
+  "ORB": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [
+        "Can be used to detect local key points in an image",
+        "Has better performance and lower computational load",
+        "Images extracted have local feature invariance",
+        "Combines FAST key point detection and BRIEF feature descriptor for improvement",
+        "Scale and rotation descriptions are added for FAST algorithm shortcomings",
+        "Principal directions of feature points are calculated",
+        "Rotation invariance is added to the BRIEF method",
+        "Greedy search solves the problem of substantial correlation between feature descriptors"
+      ],
+      "cons": []
+    },
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Calculation speed is faster than the FAST algorithm",
+        "Less affected by noise",
+        "Has good rotation invariance",
+        "Has good scale invariance",
+        "Can be applied to real-time SLAM systems",
+        "Less computationally intensive compared to SIFT",
+        "Considered better suited for applications of autonomous driving vehicles due to limited computing power"
+      ],
+      "cons": []
+    },
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Very fast"
+      ],
+      "cons": [
+        "Less effective in terms of scale"
+      ]
+    },
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "High speed",
+        "Rotation Invariance",
+        "Scale Invariance",
+        "Illumination Invariance",
+        "Stronger Anti-Invariance"
+      ],
+      "cons": []
+    },
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Efficient alternative to SIFT or SURF"
+      ],
+      "cons": []
+    }
+  },
+  "BRISK": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [
+        "Binary-based feature descriptor with constant constancy and direction of rotation",
+        "Anti-noise capability has become stronger (improved from BRIEF)"
+      ],
+      "cons": []
+    },
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Robust to orientation, noise, and scale with low calculation complexity"
+      ],
+      "cons": []
+    },
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "High speed",
+        "Rotation Invariance",
+        "Scale Invariance",
+        "Illumination Invariance",
+        "Stronger Anti-Invariance"
+      ],
+      "cons": []
+    }
+  },
+  "PTAM": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [],
+      "cons": [
+        "Does not consider scenarios about loop closing detection"
+      ]
+    },
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Realized the parallelization of tracking and mapping work",
+        "Distinguished the front-end and the back-end",
+        "Proposed a key-frames mechanism",
+        "High reliability"
+      ],
+      "cons": [
+        "Unknown scale"
+      ]
+    },
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Presented separated tracking and mapping systems to reduce the computational cost of Mono-SLAM"
+      ],
+      "cons": []
+    },
+    "A_Review_of_V-SLAM.pdf": {
+      "pros": [
+        "Improved MonoSLAM’s inability to work steadily for long periods in a wide range of environments",
+        "First SLAM algorithm using nonlinear optimization at the back end, solving fast data growth in filter-based methods",
+        "Separated tracking and mapping into two different threads, ensuring real-time performance and accuracy"
+      ],
+      "cons": [
+        "No loopback detection module, leading to error accumulation during long-running"
+      ]
+    },
+    "s41074-017-0027-2.pdf": {
+      "pros": [
+        "Introduced keyframe-based mapping in vSLAM",
+        "Can handle large number of points (compared to EKF-based approaches)",
+        "Multi-threading approach enables to handle thousands of feature points in the map"
+      ],
+      "cons": [
+        "No loop closure",
+        "Generated map is more suitable to identify landmarks",
+        "Requires the user’s interaction to establish the initial keyframes",
+        "Presents a non-negligible power consumption, making it unsuitable for low-cost embedded systems"
+      ]
+    },
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "Allows the map representation by a large number of features",
+        "Performs global optimization"
+      ],
+      "cons": [
+        "High complexity due to the bundle adjustment step",
+        "Does not count with loop closure",
+        "Generated map is more suitable to identify landmarks",
+        "Requires the user’s interaction to establish the initial keyframes",
+        "Presents a non-negligible power consumption",
+        "Unsuitable for low-cost embedded systems"
+      ]
+    },
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Divided the entire VSLAM system into two primary threads: tracking and mapping",
+        "Multi-threading baseline was approved by many subsequent works",
+        "Reduced the computational cost",
+        "Applied parallel processing to achieve real-time performance",
+        "First approach to utilize Bundle Adjustment for jointly optimizing the camera poses and the created 3D map"
+      ],
+      "cons": [
+        "Complex design",
+        "Requires user input in the first stage"
+      ]
+    }
+  },
+  "LSD-SLAM": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [],
+      "cons": []
+    },
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Requires depth estimates of each pixel",
+        "Uses the image pixels in a dense map instead of feature extraction",
+        "Can be used for low quality and stereo images"
+      ],
+      "cons": []
+    },
+    "A_Review_of_V-SLAM.pdf": {
+      "pros": [
+        "Better efficiency (compared to SVO and DSO in the context of Table I)",
+        "Better robustness to illumination variations (compared to DSO and SVO)",
+        "Better robustness to fast change (compared to DSO and SVO)",
+        "Includes loop closure"
+      ],
+      "cons": [
+        "Bad tracking accuracy (compared to SVO and DSO)"
+      ]
+    },
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Neglects texture-free areas to improve operational efficiency",
+        "Can run in real-time on CUP",
+        "Combines featureless extraction with semi-dense reconstruction"
+      ],
+      "cons": []
+    },
+    "s41074-017-0027-2.pdf": {
+      "pros": [
+        "Semi-dense map density",
+        "Supports global optimization",
+        "Supports loop closure"
+      ],
+      "cons": []
+    },
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "Allows the real-time construction of large-scale maps",
+        "Employs global optimization and loop closure",
+        "Improves its efficiency by combining the absence of feature extraction and a semi-dense reconstruction",
+        "Enables embedded implementations"
+      ],
+      "cons": [
+        "Map estimation is based essentially on pose-graph optimization",
+        "Achieved lower accuracy than others, such as PTAM and ORB-SLAM"
+      ]
+    }
+  },
+  "ORB-SLAM": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [
+        "Optimized and improved based on its predecessors",
+        "Real-time performance has been significantly improved",
+        "Establishes a common visibility chart and a minimum spanning tree for key frame identification",
+        "Allows work in complex environments",
+        "Pose optimization can be performed when the loop is closed"
+      ],
+      "cons": [
+        "Relies on feature points, so when features are not obvious, it is difficult to obtain them, which may cause tracking failure"
+      ]
+    },
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Relatively complete key frame-based monocular SLAM method",
+        "Divides the entire system into three threads: tracking, mapping, and loop closing",
+        "Feature extraction and matching, map construction, and loop detection are all based on ORB features"
+      ],
+      "cons": []
+    },
+    "s41074-017-0027-2.pdf": {
+      "pros": [
+        "Most complete feature-based monocular vSLAM system",
+        "Includes multi-threaded tracking, mapping, and closed-loop detection",
+        "Map is optimized using pose-graph optimization and BA",
+        "Considered an all-in-one package of monocular vSLAM",
+        "Open source, easy to use"
+      ],
+      "cons": []
+    },
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Can accomplish localization and mapping in well-textured sequences",
+        "Performs high-performance position recognition using Oriented FAST and Rotated BRIEF (ORB) features",
+        "Able to compute both the camera position and the environment’s structure using the keyframes collected from camera locations"
+      ],
+      "cons": [
+        "Cannot be used for autonomous navigation due to reconstructing maps with unknown scales",
+        "Inability to work in texture-less areas or environments with repetitive patterns"
+      ]
+    }
+  },
+  "SIFT": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [
+        "Not easily affected by changes in ambient light, camera rotation, and image size and scale, providing robustness"
+      ],
+      "cons": [
+        "Easy to cause keyframes to be lost if the robot device moves too fast or the field of view changes rapidly at the corners"
+      ]
+    },
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Performs non-deformation against rotation, scaling, and illumination changes"
+      ],
+      "cons": [
+        "Consumes a large amount of calculation",
+        "Most accurate at extracting features but computationally intensive"
+      ]
+    },
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Useful for feature matching and image mosaicking"
+      ],
+      "cons": [
+        "Large number of calculations makes it difficult to use in real-time systems",
+        "Performs better in blob rich regions rather than corner rich regions"
+      ]
+    },
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Rotation Invariance",
+        "Scale Invariance",
+        "Illumination Invariance",
+        "Strong Anti-Invariance"
+      ],
+      "cons": [
+        "Low speed"
+      ]
+    }
+  },
+  "Harris-Affine": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [
+        "Detected feature points are independent of the image transformation and do not change with the image transformation"
+      ],
+      "cons": [
+        "Feature description will change",
+        "Matching effect will be significantly worse if severe affine distortion occurs"
+      ]
+    }
+  },
+  "ASIFT": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [
+        "Simulated the camera’s viewing angle change",
+        "Combined the SIFT algorithm for feature matching",
+        "To a certain extent, eliminated image distortion caused by changes in the optical axis direction"
+      ],
+      "cons": []
+    },
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Fully affine invariant image comparison"
+      ],
+      "cons": []
+    }
+  },
+  "MSER": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [
+        "Uses different gray thresholds to minimize the image",
+        "Uses the area threshold method to detect gray changes"
+      ],
+      "cons": [
+        "Does not have complete scale invariance"
+      ]
+    }
+  },
+  "Monocular Visual SLAM": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Can restore scale information when combined with the Inertial Measurement Unit (IMU)"
+      ],
+      "cons": [
+        "Often occurs scale drift"
+      ]
+    },
+    "A_Review_of_V-SLAM.pdf": {
+      "pros": [],
+      "cons": [
+        "EKF cannot guarantee the global optimum when the predictive function and the renewal function is nonlinear, causing accumulating errors",
+        "UKF increases computational complexity to compensate for linearization impact"
+      ]
+    },
+    "s41074-017-0027-2.pdf": {
+      "pros": [
+        "Can achieve real-time drift free-motion structure recovery"
+      ],
+      "cons": [
+        "Computational cost increases in proportion to the size of an environment",
+        "Difficult to achieve real-time computation in large environments due to large state vector"
+      ]
+    }
+  },
+  "FAST": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Local corner detection method based on template and machine learning approach",
+        "Faster calculation speed"
+      ],
+      "cons": [
+        "Corner points do not have direction and scale information",
+        "Do not have rotation and scale invariance"
+      ]
+    },
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "High speed",
+        "Scale Invariance"
+      ],
+      "cons": [
+        "No Rotation Invariance",
+        "No Illumination Invariance",
+        "Week Anti-Invariance"
+      ]
+    }
+  },
+  "BRIEF": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Fast calculation speed of the binary string feature"
+      ],
+      "cons": [
+        "Choosing the proper test points is vital for this algorithm"
+      ]
+    }
+  },
+  "SURF": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "An improvement of SIFT",
+        "Solves the shortcomings of a large amount of SIFT calculations and poor real-time performance",
+        "Maintains the excellent performance of SIFT operator"
+      ],
+      "cons": [
+        "Greater limitations when applied in real-time SLAM systems"
+      ]
+    },
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Middle speed",
+        "Rotation Invariance",
+        "Scale Invariance"
+      ],
+      "cons": [
+        "No Illumination Invariance",
+        "Week Anti-Invariance"
+      ]
+    },
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Speeded up robust features"
+      ],
+      "cons": []
+    }
+  },
+  "Mono-SLAM": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "First real-time monocular visual SLAM system",
+        "With a persistent sparse map"
+      ],
+      "cons": [
+        "Map updates are slow"
+      ]
+    },
+    "A_Review_of_V-SLAM.pdf": {
+      "pros": [
+        "First real-time monocular VSLAM algorithm",
+        "Can achieve real-time drift free-motion structure recovery",
+        "Can build the sparse environment map online in real-time"
+      ],
+      "cons": [
+        "EKF method leads to a square growth between storage and state quantity, making it not suitable for large-scale scenarios"
+      ]
+    },
+    "s41074-017-0027-2.pdf": {
+      "pros": [
+        "Considered as a representative method in filter-based vSLAM algorithms",
+        "Camera motion and 3D structure of an unknown environment are simultaneously estimated using an extended Kalman filter (EKF)"
+      ],
+      "cons": [
+        "Computational cost that increases in proportion to the size of an environment",
+        "Difficult to achieve real-time computation in large environments"
+      ]
+    },
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "Operates in real-time",
+        "Made available by the authors",
+        "Several embedded implementations based on this algorithm are found in the literature"
+      ],
+      "cons": []
+    },
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "First endeavor in the literature to implement a real-time monocular VSLAM system",
+        "Could estimate the camera motion and 3D elements found in the world using the Extended Kalman Filter (EKF) algorithm"
+      ],
+      "cons": [
+        "Lack of global optimization and loop closure detection modules",
+        "Maps reconstructed only include landmarks and do not offer further detailed information about the area"
+      ]
+    }
+  },
+  "ORB-SLAM2": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [
+        "Supports monocular, stereo and RGB-D cameras",
+        "Feature point extraction ability is better for loop closing detection",
+        "Relocation capability is better",
+        "More accurate global consistent map can be obtained"
+      ],
+      "cons": []
+    },
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Improved framework opened the interface between the binocular camera and the RGB-D camera",
+        "High accuracy and support for long term navigation"
+      ],
+      "cons": [
+        "Time consuming"
+      ]
+    },
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Builds upon the original ORB-SLAM approach, offering increased support for stereo and RGB-D camera setups",
+        "Robustness"
+      ],
+      "cons": []
+    },
+    "A_Review_of_V-SLAM.pdf": {
+      "pros": [
+        "Supports loop closure",
+        "Sparse mapping"
+      ],
+      "cons": []
+    },
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Open-source"
+      ],
+      "cons": []
+    },
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "Considered the state of the art of feature-based algorithms",
+        "Works in three parallel threads: tracking, local mapping, and loop closing",
+        "Implements global optimization and loop closure techniques",
+        "Considers the monocular, stereo and RGB-D approaches"
+      ],
+      "cons": [
+        "Tracking failure situation may lead to a lost state if the system does not recognize a high-similarity frame",
+        "Needs to acquire the images with the same frame rate as it processes them, making real-time operation in embedded platforms difficult"
+      ]
+    },
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Can accomplish localization and mapping in well-textured sequences",
+        "Performs high-performance position recognition using Oriented FAST and Rotated BRIEF (ORB) features",
+        "Extension to ORB-SLAM with three parallel threads, including tracking, local mapping, and loop closing"
+      ],
+      "cons": [
+        "Cannot be used for autonomous navigation due to reconstructing maps with unknown scales",
+        "Inability to work in texture-less areas or environments with repetitive patterns"
+      ]
+    }
+  },
+  "VINS-Mono": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [
+        "Utilized the tight coupling method to recover the scale by monocular combined with the Inertial Measurement Unit (IMU) to obtain feature points"
+      ],
+      "cons": [
+        "Consumes fewer calculations during the tracking and matching process, but is insensitive to keyframes",
+        "Lacks the development potential for the increasing requirements of SLAM for real-time and reliability of mobile robots"
+      ]
+    },
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Regarded as an excellent monocular VI-SLAM system",
+        "Uses an optical flow method in the front-end",
+        "Adopts a nonlinear optimization algorithm based on sliding window in the back-end",
+        "Initialization method adopts disjoint method",
+        "Performances the maximum testing frame rate with the average value of 270.6fps"
+      ],
+      "cons": []
+    },
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Classic fusion of vision and IMU",
+        "Positioning accuracy is comparable to OKVIS",
+        "More complete and robust initialization and loop closure detection process than OKVIS",
+        "Can adapt to indoor, outdoor and different illumination environments with good adaptability"
+      ],
+      "cons": []
+    },
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "Already demonstrated to achieve high accuracy when compared to other algorithms",
+        "Demonstrated suitability in embedded implementations (since it only considers pose and velocity from the latest IMU states during the optimization process)"
+      ],
+      "cons": [
+        "Presented the highest memory usage when compared to algorithms such as ROVIO, VIORB, and OKVIS"
+      ]
+    },
+    "1-s2.0-S0921889019301009-main.pdf": {
+      "pros": [
+        "Robust and versatile monocular visual-inertial state estimator"
+      ],
+      "cons": []
+    }
+  },
+  "RK-SLAM": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [
+        "Uses a method based on RANSAC to extract local homomorphism data between the current frame and another key frame",
+        "Solves the problem of unstable feature extraction caused by the camera when it experiences fast motion"
+      ],
+      "cons": []
+    }
+  },
+  "3D reconstruction SLAM (Greene et al.)": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [
+        "Uses a large number of key frames to obtain positioning environmental information",
+        "Accuracy is high"
+      ],
+      "cons": [
+        "Device has high requirements on the GPU"
+      ]
+    }
+  },
+  "DATMO-SLAM": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [
+        "Feature points are easy to extract"
+      ],
+      "cons": [
+        "Calculation is relatively complicated",
+        "Hardware cost is high"
+      ]
+    }
+  },
+  "SVO": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [
+        "Used the procedure of tracking optical flow to directly combine image feature points"
+      ],
+      "cons": [
+        "Consumes fewer calculations during the tracking and matching process, but is insensitive to keyframes",
+        "Lacks the development potential for the increasing requirements of SLAM for real-time and reliability of mobile robots"
+      ]
+    },
+    "A_Review_of_V-SLAM.pdf": {
+      "pros": [
+        "The current frame will be selected as the key frame when its number of valid feature points is less than the specified threshold"
+      ],
+      "cons": []
+    },
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Can run at high frame rates",
+        "Enables it to run in low-cost embedded systems",
+        "Combines the advantages of the feature point method and direct method"
+      ],
+      "cons": [
+        "Only performs short-term data association, which limits its accuracy"
+      ]
+    },
+    "s41074-017-0027-2.pdf": {
+      "pros": [
+        "Sparse map density",
+        "No global optimization",
+        "No loop closure"
+      ],
+      "cons": []
+    },
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "Enables direct pixel correspondences",
+        "Allows the usage of a probabilistic mapping method",
+        "Capable of operating with a high frame rate",
+        "Enables its operation in a low-cost embedded system"
+      ],
+      "cons": [
+        "Presents a limited accuracy due to the short-term data association",
+        "Does not implement global optimization techniques or loop closure"
+      ]
+    }
+  },
+  "DSO": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Fast calculation speed",
+        "Insensitive to weak feature conditions",
+        "Effectively reduces both the estimated trajectory and map error",
+        "Avoids inconsistent map point duplications at the same time"
+      ],
+      "cons": [
+        "Based on the strong assumption that the gray level is unchanged, so it is very sensitive to changes in illumination"
+      ]
+    },
+    "A_Review_of_V-SLAM.pdf": {
+      "pros": [
+        "Good tracking accuracy (relative to LSD-SLAM)",
+        "Bad efficiency (relative to LSD-SLAM)",
+        "Bad robustness to illumination variations (relative to LSD-SLAM)",
+        "Bad robustness to fast change (relative to LSD-SLAM)",
+        "No loop closure",
+        "No relocalization"
+      ],
+      "cons": [
+        "Only optimizes 5 to 7 key frames"
+      ]
+    },
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Can effectively use any image pixel, making it robust even in featureless regions",
+        "Can gain more accurate results than SVO",
+        "Can calculate accurate camera attitude in poor feature point detector performance",
+        "Improves the robustness of low-texture areas or blurred images",
+        "Uses both geometric and photometric camera calibration results for high accuracy estimation"
+      ],
+      "cons": [
+        "Only considers local geometric consistency, inevitably producing cumulative errors",
+        "Not a complete SLAM because it does not include loop closure, map reuse, etc."
+      ]
+    },
+    "s41074-017-0027-2.pdf": {
+      "pros": [
+        "Sparse map density",
+        "No global optimization",
+        "No loop closure"
+      ],
+      "cons": []
+    },
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "Performs a continuous optimization by applying a local bundle adjustment that optimizes the keyframes window and the inverse depth map",
+        "Considers exposure time and lens distortion in the optimization to increase the algorithm’s robustness"
+      ],
+      "cons": [
+        "Initially does not include global optimization or loop closure"
+      ]
+    }
+  },
+  "OpenVSLAM": {
+    "3343031.3350539.pdf": {
+      "pros": [
+        "Monocular, stereo, and RGBD visual SLAM system",
+        "Comprises well-known SLAM approaches, encapsulating them in several separated components with clear application programming interfaces (APIs)",
+        "Provides extensive documentation including sample code snippets",
+        "Compatible with various types of camera models and can be customized for optional camera models",
+        "Created maps can be stored and loaded",
+        "Can localize new images using prebuilt maps",
+        "A cross-platform viewer running on web browsers is provided for convenience of users",
+        "Provides this SLAM framework with a more lax OSS license than most of the conventional visual SLAM frameworks",
+        "Continuously maintains the software so that researchers can jointly contribute to its development",
+        "Functions for I/O of map databases are implemented",
+        "Map database is stored in MessagePack format, hence the map information can be reused for any third-party applications"
+      ],
+      "cons": []
+    },
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Sparse visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "DSM": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Full monocular visual SLAM system based on a photometric bundle adjustment (PBA) algorithm",
+        "Proved to reduce both the estimated trajectory and map error while avoiding inconsistent map point duplications at the same time"
+      ],
+      "cons": []
+    }
+  },
+  "CubemapSLAM": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Sparse visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "ProSLAM": {
+    "3343031.3350539.pdf": {
+      "pros": [
+        "Graph-based SLAM algorithm with the indirect method is used"
+      ],
+      "cons": []
+    },
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Sparse visual SLAM"
+      ],
+      "cons": []
+    },
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Indirect/feature based V-SLAM system designed for ease of understanding and implementation",
+        "Builds local maps with landmarks acquired in a nearby region",
+        "Shown to have a competitive performance when compared to other well know SLAM systems",
+        "Has a lower computational load"
+      ],
+      "cons": [
+        "Lack of optimizations such as Bundle Adjustment allows it to fall behind in terms of robustness to errors"
+      ]
+    },
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Graph SLAM from a programmer’s perspective"
+      ],
+      "cons": []
+    }
+  },
+  "ENFT-SLAM": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Sparse visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "TagSLAM": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Sparse visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "UcoSLAM": {
+    "3343031.3350539.pdf": {
+      "pros": [
+        "Simultaneous Localization and Mapping by Fusion of KeyPoints and Squared Planar Markers"
+      ],
+      "cons": []
+    },
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Sparse visual SLAM"
+      ],
+      "cons": []
+    },
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Outperforms conventional VSLAM systems",
+        "Combines natural and human-made landmarks",
+        "Automatically calculates the scale of the surroundings using fiducial markers",
+        "Primary driving force is to combat natural landmarks’ instability, repetition, and poor tracking qualities",
+        "Can operate in surroundings without tags or features (keypoints-only, markers-only, and mixed modes)",
+        "Has a marker-based loop closure detection system",
+        "Can describe features using any descriptor, including ORB and FAST"
+      ],
+      "cons": [
+        "System executes in multiple threads, making it a time-consuming approach for particular scenarios"
+      ]
+    }
+  },
+  "CNN-SVO": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Semi-dense visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "EVO": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Semi-dense visual SLAM",
+        "Based on the event camera"
+      ],
+      "cons": []
+    }
+  },
+  "MLM-SLAM": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Dense visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "KinectFusion": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Dense visual SLAM"
+      ],
+      "cons": []
+    },
+    "s41074-017-0027-2.pdf": {
+      "pros": [
+        "Dense map density",
+        "No global optimization",
+        "No loop closure"
+      ],
+      "cons": []
+    },
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [],
+      "cons": []
+    }
+  },
+  "DVO": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Dense visual SLAM"
+      ],
+      "cons": []
+    },
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "Robust to textureless scenes",
+        "Performs loop closure detection"
+      ],
+      "cons": [
+        "Does not perform an explicit map reconstruction"
+      ]
+    }
+  },
+  "RGB-D SLAM": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Dense visual SLAM"
+      ],
+      "cons": []
+    },
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "Performs the RANSAC algorithm to estimate the transformation between the matched features",
+        "Uses the ICP algorithm to obtain pose estimation",
+        "Executes a global optimization and loop closure to eliminate the accumulated error",
+        "Proposes using an environment measurement model (EMM) to validate the transformations obtained between the frames"
+      ],
+      "cons": [
+        "Based on SIFT features, which degrades its real-time performance",
+        "Presents a high computation consumption",
+        "Requires a slow movement by the sensor for its correct operation"
+      ]
+    }
+  },
+  "RTB-MAP": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Dense visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "Dynamic Fusion": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Dense visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "Volume Deform": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Dense visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "Elastic Fusion": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Dense visual SLAM"
+      ],
+      "cons": []
+    },
+    "s41074-017-0027-2.pdf": {
+      "pros": [
+        "Dense map density",
+        "Supports global optimization",
+        "Supports loop closure"
+      ],
+      "cons": []
+    }
+  },
+  "InfiniTAM": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Dense visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "Bundle Fusion": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Dense visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "KO-Fusion": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Dense visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "SOFT-SLAM": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Dense visual SLAM"
+      ],
+      "cons": []
+    },
+    "A_Review_of_V-SLAM.pdf": {
+      "pros": [
+        "Stereo visual pose gragh SLAM for small-scale high-speed UAVs",
+        "Consists of a novel stereo odometry algorithm relying on feature tracking (SOFT)",
+        "Performs the best on the KITTI dataset",
+        "Can support global consistency"
+      ],
+      "cons": []
+    }
+  },
+  "RKD-SLAM": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Dense visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "Maplab": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Dense visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "PointNVSNet": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Dense visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "MID-Fusion": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Dense visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "MaskFusion": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Dense visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "Trust-region iterative strategy": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Faster initialization and higher positioning accuracy (integrated into VI-ORBSLAM)",
+        "Combines the steepest descent algorithm and G-N algorithm",
+        "Objective function is approximated with a trust model",
+        "Achieves the best accurate of positioning in almost all sequences",
+        "Faster frame rate than ORB-SLAM3 and VI-ORBSLAM"
+      ],
+      "cons": []
+    }
+  },
+  "MSCKF": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Strong scalability"
+      ],
+      "cons": [
+        "Poor accuracy"
+      ]
+    },
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Fuses IMU and visual information under the EKF in a tightly coupled way",
+        "Can adapt to more intense motion and texture loss, with higher robustness",
+        "Speed and accuracy can also reach a high level",
+        "Widely used in robot, UAV, and AR/VR fields"
+      ],
+      "cons": [
+        "Backend uses the Kalman filter method, so global information cannot be used for optimization",
+        "No loopback detection will cause error accumulation"
+      ]
+    },
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "Tightly coupled sensor fusion"
+      ],
+      "cons": [
+        "No global optimization",
+        "No loop closure"
+      ]
+    }
+  },
+  "ROVIO": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "High robustness with direct photometric feedback"
+      ],
+      "cons": [
+        "Poor accuracy"
+      ]
+    },
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "Tightly coupled sensor fusion"
+      ],
+      "cons": [
+        "No global optimization",
+        "No loop closure"
+      ]
+    }
+  },
+  "OKVIS": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Uses the IMU measurement values to predict the current state",
+        "Spatial points and two-dimensional image features constitute a re-projection error",
+        "Predicted IMU state quantity and optimized parameters constitute the IMU error term",
+        "Re-projection error is combined with the IMU error term for optimization"
+      ],
+      "cons": [
+        "Binocular configuration leading to complex configuration"
+      ]
+    },
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Outputs six degrees of freedom pose",
+        "Has good accuracy"
+      ],
+      "cons": [
+        "Only outputs six degrees of freedom pose without loopback detection and map, so it is not a complete SLAM in a strict sense",
+        "Pose will be loose when it runs for a long time"
+      ]
+    },
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "Combines the IMU data and reprojection terms into an objective function",
+        "Allows the algorithm to jointly optimize both the weighted reprojection error and temporal error from IMU",
+        "Builds a local map",
+        "Presented a lower memory usage when compared with other algorithms (VINS-Mono, VIORB, and ROVIO), enabling its embedded implementation",
+        "Image processing techniques and keypoint detection were accelerated on FPGA-CPU architecture"
+      ],
+      "cons": [
+        "Demonstrated to be less accurate than others",
+        "Needed to reduce the number of keypoints, the keyframe window, and the IMU-linked frames to achieve real-time performance on some platforms"
+      ]
+    }
+  },
+  "LOAM": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Loosely coupled"
+      ],
+      "cons": [
+        "IMU measurement information is not used in the optimization step"
+      ]
+    }
+  },
+  "LeGO-LOAM": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Loosely coupled"
+      ],
+      "cons": [
+        "IMU measurement information is not used in the optimization step"
+      ]
+    }
+  },
+  "LIO-Mapping": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Uses the optimization process in VINS-Mono to minimize IMU residuals and LIDAR measurement errors"
+      ],
+      "cons": [
+        "Designed to optimize all measurement values, so the real-time effect of the system is poor"
+      ]
+    }
+  },
+  "LIC-Fusion": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Integrates both LiDAR features extracted in point clouds and sparse visual features"
+      ],
+      "cons": []
+    }
+  },
+  "V-LOAM": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Tightly coupled",
+        "Low-drift",
+        "Robust"
+      ],
+      "cons": [
+        "Time consuming"
+      ]
+    }
+  },
+  "LIMO": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Tightly coupled",
+        "Accurate depth measurement"
+      ],
+      "cons": [
+        "Poor performance for dynamic landmarks"
+      ]
+    }
+  },
+  "VIL-SLAM": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [],
+      "cons": []
+    }
+  },
+  "PointFusion": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [],
+      "cons": []
+    }
+  },
+  "Roar-Net": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [],
+      "cons": []
+    }
+  },
+  "AVOD": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [],
+      "cons": []
+    }
+  },
+  "MV3D": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [],
+      "cons": []
+    }
+  },
+  "FuseNet": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [],
+      "cons": []
+    }
+  },
+  "Gabor wavelets technique": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "One of the basic image processing and machine vision algorithms for feature extraction work based on texture description using image decomposition into different orientations and scales",
+        "Often useful for images with different texture and segments",
+        "Can be helpful for indoor SLAM and object detection (strong lines, contours, and edges at several different scales and orientation)"
+      ],
+      "cons": [
+        "Computational efficiency limits its use (when representing texture attributes with no decrease in dimensionality)"
+      ]
+    }
+  },
+  "PCA": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Feature detection technique applied widely for many object-based analysis applications for data reduction",
+        "Transforms multi-dimensional data to a linear vector for dimensional reduction using determination of linear variables with largest variance"
+      ],
+      "cons": []
+    }
+  },
+  "LDA": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Feature extraction and data reduction technique",
+        "Projects a high-dimensional feature vector to a low-dimensional space",
+        "Usually used along with a PCA algorithm for image matrix reduction"
+      ],
+      "cons": []
+    }
+  },
+  "LIFT": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [],
+      "cons": []
+    }
+  },
+  "FREAK": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Binary feature method",
+        "Builds a system which is robust to orientation, noise, and scale with low calculation complexity"
+      ],
+      "cons": []
+    }
+  },
+  "HOG": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Basic model for human detection",
+        "Extracts and defines objects’ corners and edges as main object features"
+      ],
+      "cons": []
+    }
+  },
+  "DAISY": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Robust to contrast, scale, rotation, illumination, and perspective changes",
+        "Good for noisy environments with changing light"
+      ],
+      "cons": []
+    }
+  },
+  "GLOH": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Robust descriptor",
+        "Extension of the SIFT algorithm, integrates position information and local appearance by considering more spatial regions"
+      ],
+      "cons": []
+    }
+  },
+  "LIOP": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Invariant to image blur, image rotation and monotonic intensity changes"
+      ],
+      "cons": [
+        "Large computation cost makes this method complex for real time applications"
+      ]
+    }
+  },
+  "Match-Net": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Unified approach to combine learning feature representations and comparison functions for training a patch matching system",
+        "Deep convolutional network for patch feature extraction and a network of three fully connected layers to compute similarity",
+        "Useful for wide-baseline viewpoint invariant matching",
+        "Proper deep learning approach for image matching and object detection"
+      ],
+      "cons": []
+    }
+  },
+  "KAZE": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Multi-scale 2D algorithm in nonlinear scale spaces",
+        "Invariant to scale and rotation"
+      ],
+      "cons": []
+    }
+  },
+  "A-KAZE": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Fast multi-scale feature detection approach that exploits the aids of nonlinear scale spaces",
+        "Utilizes the non-linear scale space that blurs the image pixels, resulting in a noise removal process without damaging the main image pixels"
+      ],
+      "cons": []
+    }
+  },
+  "LDB": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Binary descriptor",
+        "Ultra-fast feature for scalable augmented reality on mobile devices"
+      ],
+      "cons": []
+    }
+  },
+  "OSRI": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Fast and low-cost computation method",
+        "Builds a subregion set from a region by designing rotation invariant sampling",
+        "Defines a descriptor according to high level invariants",
+        "Rejects non-matching descriptors at early stages by comparing a small portion of the descriptor"
+      ],
+      "cons": []
+    }
+  },
+  "FAB-MAP": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Built based on the Bag-of-Words technique to check new image features and compare them with the prepared dictionary"
+      ],
+      "cons": [
+        "Needs a large amount of memory to process the data, which is an important limitation for robotic systems"
+      ]
+    }
+  },
+  "ORB-SLAM3": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Achieves the best accurate of positioning in almost all sequences",
+        "Provides the best performance on six sequences"
+      ],
+      "cons": []
+    },
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Accurate open-source library"
+      ],
+      "cons": []
+    },
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "Combines the ORB-SLAM and VIORB algorithms",
+        "Maintains a multi-map representation called Atlas",
+        "Map merging is added to the last thread, using all the maps in Atlas to identify common parts and perform loop correction or merge maps",
+        "Proposed initialization technique relies on the Maximum-a-Posteriori algorithm individually applied to the visual and inertial estimations, which are later jointly optimized",
+        "Can be used with monocular, stereo, and RGB-D cameras",
+        "Implements global optimizations and loop closures techniques",
+        "Presents a reduced initialization time compared to its predecessor, VIORB"
+      ],
+      "cons": [
+        "Demonstrated significant errors results of online performance",
+        "Obtained a good performance but failed to process all the sequences",
+        "Obtained inaccurate estimates in outdoor sequences"
+      ]
+    },
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Works with various camera types, such as monocular, RGB-D, and stereo-vision",
+        "Provides improved pose estimation outputs"
+      ],
+      "cons": []
+    }
+  },
+  "CNN-SLAM": {
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "One of the first works to present a real-time SLAM system based on convolutional neural networks (CNN)",
+        "Does not suffer from absolute scale limitation, since it uses depth prediction to perform the scale estimation",
+        "Counts with global optimization and loop closure"
+      ],
+      "cons": [
+        "Authors needed to employ a CPU+GPU architecture to run the algorithm in real-time"
+      ]
+    },
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Integrates Geometry and semantic information, generating a map with semantic information"
+      ],
+      "cons": []
+    },
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Processes the input frames for camera pose estimation",
+        "Uses keyframes for depth prediction",
+        "Segments camera frames into smaller sections to provide a better understanding of the environment, enabling parallel processing and real-time performance"
+      ],
+      "cons": []
+    }
+  },
+  "Dense Visual SLAM": {
+    "s41074-017-0027-2.pdf": {
+      "pros": [
+        "Dense map density",
+        "Supports global optimization",
+        "Supports loop closure"
+      ],
+      "cons": []
+    }
+  },
+  "SLAM++": {
+    "s41074-017-0027-2.pdf": {
+      "pros": [
+        "Object level RGB-D vSLAM algorithm",
+        "Several 3D objects are registered into the database in advance and recognized in an online process",
+        "Estimated map is refined",
+        "3D points are replaced by 3D objects to reduce the amount of data"
+      ],
+      "cons": []
+    },
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "Hybrid tracking method",
+        "Dense map density",
+        "Supports loop closure"
+      ],
+      "cons": []
+    },
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "One of the first endeavors of utilizing semantic information in a real-time SLAM framework",
+        "Employs RGB-D sensor outputs",
+        "Performs 3D camera pose estimation and tracking to shape a pose graph",
+        "Predicted poses will be optimized by merging the relative 3D poses obtained from semantic objects in the scene"
+      ],
+      "cons": []
+    }
+  },
+  "VIORB": {
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "First visual-inertial method to employ map reuse",
+        "Presents high-performance accuracy",
+        "Presents high memory usage",
+        "Tightly coupled sensor fusion",
+        "Supports global optimization",
+        "Supports loop closure"
+      ],
+      "cons": [
+        "IMU initialization takes between 10 to 15 seconds",
+        "No embedded implementations were found"
+      ]
+    }
+  },
+  "VI-DSO": {
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "Combines the photometric and inertial errors in an energy function",
+        "Results in better accuracy and robustness than the original DSO and other algorithms, like ROVIO",
+        "Tightly coupled sensor fusion"
+      ],
+      "cons": [
+        "Initialization procedure relies on bundle adjustment, which makes the initialization slow",
+        "Does not perform global optimization and loop closure detection",
+        "Embedded implementations were not found in the literature",
+        "No global optimization",
+        "No loop closure"
+      ]
+    }
+  },
+  "DVO-SLAM": {
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "Keyframe-based technique",
+        "Minimizes the photometric error between the keyframes to acquire the depth values and pixels coordinates, as well as camera motion",
+        "Robust to textureless scenes",
+        "Performs loop closure detection"
+      ],
+      "cons": [
+        "Does not perform an explicit map reconstruction"
+      ]
+    }
+  },
+  "DS-SLAM": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Visual SLAM for dynamic scenarios based on ORB-SlAM2",
+        "Provides interfaces for monocular, stereo, and RGB-D cameras",
+        "Uses MASK-RCNN for monocular and stereo cameras to segment dynamic objects in each frame to avoid feature extraction of dynamic objects in the SLAM system",
+        "Uses the method of multi-view geometry for RGB-D camera for more accurate motion segmentation",
+        "Removes objects in the scene dynamic segmentation",
+        "Creates a separate thread to build a dense semantic octree map to help the robot to achieve a higher level of the task"
+      ],
+      "cons": [
+        "Chooses to remove all potentially moving objects, such as parked cars, which may lead to too few remaining stationary feature points and affect camera pose estimation"
+      ]
+    },
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Can be used in dynamic contexts",
+        "Offers semantic-level information for map construction",
+        "Employs the Optical Flow algorithm with a real-time semantic segmentation network called SegNet to exclude dynamic items before the pose estimation process and increase localization accuracy",
+        "High accuracy in localization"
+      ],
+      "cons": [
+        "Faces semantic segmentation limitations",
+        "Computationally intensive features"
+      ]
+    }
+  },
+  "SemanticFusion": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Semantic prediction of CNN’s multiple views can be probabilistically integrated into the map"
+      ],
+      "cons": []
+    }
+  },
+  "AVP-SLAM": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Autonomous parking"
+      ],
+      "cons": []
+    }
+  },
+  "RoadMap": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Framework of on-vehicle mapping, on-cloud maintenance, and user-end localization"
+      ],
+      "cons": []
+    }
+  },
+  "Mask R-CNN": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Pioneering work of instance segmentation",
+        "Adds a branch for semantic segmentation based on Faster R-CNN",
+        "Can not only detect the target in the image but also give a high-quality segmentation result for each target"
+      ],
+      "cons": []
+    },
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Used to extract 2D semantic information from the scene"
+      ],
+      "cons": [
+        "System does not work in real-time due to demanding a pre-processing step for segmentation and the slow performance"
+      ]
+    }
+  },
+  "YOLOv5s": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Environment is easy to configure",
+        "Model training is very fast"
+      ],
+      "cons": []
+    },
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Lightweight object detection network",
+        "Enables it to acquire semantic information in the scene"
+      ],
+      "cons": [
+        "Backbone network needs to be optimized yet to make it more robust and practicable"
+      ]
+    }
+  },
+  "PSPNet": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "A pyramid module, which fuses the features of each level, such as a pyramid, and finally fuses the output to further improve the segmentation effect"
+      ],
+      "cons": []
+    }
+  },
+  "FCN": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Does not have a fully connected layer (compared to CNN)",
+        "Obtains the spatial position of the feature map",
+        "Fuses the output of different depth layers with the hierarchical structure",
+        "Combines local information with global information and improves the accuracy of semantic segmentation",
+        "Opens the first application of a convolutional neural network in semantic segmentation"
+      ],
+      "cons": []
+    }
+  },
+  "SegNet": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Encoder-decoder structure was proposed",
+        "Completely symmetrical structure is adopted"
+      ],
+      "cons": [
+        "Combination of two independent networks severely reduced the detection speed"
+      ]
+    }
+  },
+  "DeepLabv1": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Uses Atrous convolution"
+      ],
+      "cons": []
+    }
+  },
+  "DeepLabv3+": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Greatly reduce the number of parameters"
+      ],
+      "cons": []
+    }
+  },
+  "YOLACT": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Based on the one-stage target detection algorithm",
+        "Overall architecture design is very lightweight",
+        "Achieves good results in speed and effect"
+      ],
+      "cons": []
+    }
+  },
+  "Kimera": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Mature scenario-oriented semantic SLAM algorithm",
+        "Modular and allows replacing each module or executing them in isolation"
+      ],
+      "cons": []
+    }
+  },
+  "DROID-SLAM": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Core is a learnable update operator",
+        "End-to-end neural network architecture for visual SLAM",
+        "Has great advantages over previous work in challenging environments"
+      ],
+      "cons": []
+    },
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Deep learning-based visual SLAM for monocular, stereo, and RGB-D cameras",
+        "Could attain greater accuracy and robustness than well-known monocular and stereo-track methods",
+        "Operates in real-time",
+        "Does not need to be trained again to use stereo and RGB-D inputs",
+        "Minimizes the projection error, like indirect methods, while not requiring any pre-processing for feature identification and matching",
+        "Uses a feature extraction network comprising downsampling layers and residual blocks to create dense features"
+      ],
+      "cons": []
+    }
+  },
+  "DeepVO": {
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "End-to-end VO framework using a Deep Recurrent Convolutional Neural Network (RCNN) architecture for monocular settings",
+        "Uses deep learning to automatically learn the appropriate features",
+        "Models sequential dynamics and relations",
+        "Infers poses directly from color frames",
+        "Architecture includes a CNN called FlowNet for computing Optical Flow from sequential frames",
+        "Uses two Long Short-Term Memory (LSTM) layers for estimating the temporal changes based on the feed provided by the CNN",
+        "Can simultaneously extract visual characteristics and perform sequential modeling by combining CNN and Recurrent Neural Network (RNN)",
+        "Can incorporate geometry with the knowledge models learned for an enhanced VO"
+      ],
+      "cons": [
+        "Cannot be utilized to replace conventional geometry-based VO approaches"
+      ]
+    }
+  },
+  "NGO": {
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "DeepVO-like end-to-end system using a Neural Graph Optimization (NGO) step instead of LSTMs",
+        "Operates a loop closure detection and correction mechanism based on temporally distinct poses",
+        "Uses two attention-optimization methods to jointly optimize the aggregated predictions made by convolutional layers of local pose estimation modules",
+        "Delivers global pose estimations",
+        "Outperformed DeepVO’s performance and accuracy levels"
+      ],
+      "cons": [
+        "Needs to be connected to a SLAM framework to supply the re-localization signals"
+      ]
+    }
+  },
+  "DeepFactors": {
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Densely rebuilding the environment map with monocular cameras",
+        "Real-time solution",
+        "Performs joint optimization of the pose and depth",
+        "Makes use of probabilistic data and combines learned and model-based approaches",
+        "Improves the idea of the CodeSLAM framework and focuses on code optimization in traditional SLAM pipelines"
+      ],
+      "cons": [
+        "Requires employing GPUs to guarantee real-time performance due to the computational costs of the modules"
+      ]
+    }
+  },
+  "DBLD-SLAM": {
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Modified version of ORB-SLAM that uses deep binary local descriptors provided by a CNN instead of ORB features",
+        "Can improve positioning and VO accuracy by utilizing higher-quality feature matching and tracking",
+        "Leads to enhanced adaptive scale, quantization, and correlation losses",
+        "Achieves better results than other VSLAM methodologies with hand-craft feature processing",
+        "Real-time performance"
+      ],
+      "cons": [
+        "Some revisions are required to decrease its computational cost"
+      ]
+    }
+  },
+  "DP-SLAM": {
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Real-time dynamic object removal",
+        "Uses a Bayesian probability propagation model based on the likelihood of the keypoints derived from moving objects",
+        "Can overcome the variation of geometry restrictions and semantic data using the moving probability propagation algorithm and iterative probability updates",
+        "Integrated with ORB-SLAM 2.0"
+      ],
+      "cons": [
+        "Only works in sparse VSLAMs",
+        "Faces high computational costs due to the iterative probability updater module"
+      ]
+    }
+  },
+  "DynaSLAM II": {
+    "robotics-11-00024-with-cover.pdf": {
+      "pros": [
+        "Incorporates semantic segmentation to track dynamic objects",
+        "Based on ORB-SLAM2",
+        "Performs semantic segmentation and feature extraction at each new frame",
+        "Does not make assumptions about the dynamic objects and performs the data association of dynamic and static features",
+        "Static features are used to estimate the initial camera poses",
+        "Presents a performance comparable to other state-of-the-art algorithms, such as the ORB-SLAM2"
+      ],
+      "cons": []
+    }
+  },
+  "Undeepvo": {
+    "1-s2.0-S0921889019301009-main.pdf": {
+      "pros": [
+        "Monocular visual odometry through unsupervised deep learning"
+      ],
+      "cons": []
+    }
+  },
+  "SVO-PL": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [
+        "Stereo visual odometry with fusion of points and line segments"
+      ],
+      "cons": []
+    }
+  },
+  "Direct sparse odometry (Engel et al.)": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [],
+      "cons": []
+    }
+  },
+  "LSD-SLAM (Engel et al.)": {
+    "1-s2.0-S0030402620312572-main.pdf": {
+      "pros": [
+        "Large-Scale Direct Monocular SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "DVL-SLAM": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Sparse depth enhanced direct visual-LIDAR SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "LIO-SAM": {
+    "1-s2.0-S0952197622001853-main.pdf": {
+      "pros": [
+        "Tightly-coupled LIDAR inertial odometry via smoothing and mapping"
+      ],
+      "cons": []
+    }
+  },
+  "Deep EndoVO": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Recurrent convolutional neural network (RCNN) based visual odometry approach for endoscopic capsule robots"
+      ],
+      "cons": []
+    }
+  },
+  "SeqLPD": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [
+        "Sequence matching enhanced loop-closure detection based on large-scale point cloud description for self-driving vehicles"
+      ],
+      "cons": []
+    }
+  },
+  "CodeSLAM": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Compact, optimisable representation for dense visual SLAM"
+      ],
+      "cons": []
+    }
+  },
+  "ROVIO (Bloesch et al.)": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Robust visual inertial odometry using a direct EKF-based approach"
+      ],
+      "cons": []
+    }
+  },
+  "PL-SVO": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Point-line front-end",
+        "Optimization back-end",
+        "No loop closure",
+        "Sparse mapping"
+      ],
+      "cons": []
+    }
+  },
+  "PL-SLAM": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Point-line front-end",
+        "Optimization back-end",
+        "Supports loop closure",
+        "Sparse mapping"
+      ],
+      "cons": []
+    }
+  },
+  "D3VO": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Uses deep learning from three aspects: depth estimation, pose estimation, and uncertainty estimation",
+        "Prediction depth, pose and uncertainty are closely combined into a direct visual odometer to simultaneously improve the performance of front-end tracking and back-end nonlinear optimization"
+      ],
+      "cons": [
+        "Self-supervised methods are difficult to adapt to all environments"
+      ]
+    }
+  },
+  "DXSLAM": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Solved the limitations of the above methods (traditional methods)",
+        "Local and global features are extracted from each frame using CNN",
+        "Features are then fed into modern SLAM pipelines for posture tracking, local mapping, and repositioning",
+        "Achieves higher efficiency and lower computational cost compared with traditional BOW-based methods"
+      ],
+      "cons": []
+    },
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Uses deep learning to find keypoints that resemble SuperPoints and to produce both the general descriptors and the images’ keypoints",
+        "Trained a cutting-edge deep CNN titled HF-NET to produce frame- and keypoint-based descriptions by extracting local and global information from each frame",
+        "Used the offline Bag of Words (BoW) method to train a visual vocabulary of local characteristics for precise loop closure recognition",
+        "Operates in real-time without using a Graphics Processing Unit (GPU) and is compatible with contemporary CPUs",
+        "Has a great ability to resist dynamic changes in dynamic contexts",
+        "Could achieve more accurate results than ORB-SLAM 2.0 and DS-SLAM"
+      ],
+      "cons": [
+        "Complex architecture for feature extraction",
+        "Incorporation of deep features into old SLAM framework"
+      ]
+    }
+  },
+  "DROID-SLAM (Teed et al.)": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Deep Visual SLAM for Monocular, Stereo, and RGB-D Cameras"
+      ],
+      "cons": []
+    }
+  },
+  "VINet": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Uses a conventional small LSTM network to process the original data of IMU and obtain the motion characteristics under IMU data",
+        "Combines visual motion features with IMU motion features, and sends it into a core LSTM network for feature fusion and pose estimation"
+      ],
+      "cons": []
+    }
+  },
+  "DeepVIO": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Self-supervised Deep Learning of Monocular Visual Inertial Odometry using 3D Geometric Constraints"
+      ],
+      "cons": []
+    }
+  },
+  "CNN-based Deep VO": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [],
+      "cons": []
+    }
+  },
+  "CNN-1b VO": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [],
+      "cons": []
+    }
+  },
+  "CNN-4b VO": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [],
+      "cons": []
+    }
+  },
+  "P-CNN VO": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [],
+      "cons": []
+    }
+  },
+  "Deep RCNNs-DeepVO": {
+    "1-s2.0-S0957417422010156-main.pdf": {
+      "pros": [],
+      "cons": []
+    }
+  },
+  "SOF-SLAM": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Semantic Visual SLAM for Dynamic Environments"
+      ],
+      "cons": []
+    }
+  },
+  "CDSFusion": {
+    "remotesensing-14-03010-with-cover.pdf": {
+      "pros": [
+        "Dense Semantic SLAM for Indoor Environment Using CPU Computing"
+      ],
+      "cons": []
+    }
+  },
+  "VIRAL SLAM": {
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Multi-modal system that couples camera, LiDAR, IMU, and UWB",
+        "Presented a map-matching marginalization scheme for visual features based on the local map constructed from LiDAR point clouds",
+        "Contains a synchronization scheme and trigger for the utilized sensors"
+      ],
+      "cons": [
+        "Computationally intensive due to handling synchronization, multi-threading, and sensor conflict resolution"
+      ]
+    }
+  },
+  "RWT-SLAM": {
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Deep feature matching-based VSLAM framework for weakly textured situations",
+        "Fed with feature masks from an enhanced LoFTR algorithm for local image feature matching",
+        "Robust feature-matching results and performance"
+      ],
+      "cons": [
+        "Computationally demanding"
+      ]
+    }
+  },
+  "Deepsort": {
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Used for multi-object tracking detected by the semantic feature extractor"
+      ],
+      "cons": []
+    }
+  },
+  "Edge-SLAM (Xu et al.)": {
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Real-time, edge-assisted semantic VSLAM system for mobile and resource-constrained devices",
+        "Employs a series of fine-grained modules to be used by an edge server and the associated mobile devices rather than requiring heavy threads",
+        "Semantic segmentation module based on Mask R-CNN is included to improve segmentation and object tracking",
+        "Avoided duplicate processing by reusing the findings of the object segmentation",
+        "Adapted system parameters to different network bandwidth and latency situations"
+      ],
+      "cons": []
+    }
+  },
+  "VPS-SLAM": {
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Lightweight graph-based VSLAM framework for aerial robotics",
+        "Real-time system",
+        "Integrates geometrical data, several object detection techniques, and visual/visual-inertial odometry for pose estimation and building the semantic map of the environment",
+        "Leverages low-level characteristics, IMU measurements, and high-level planar information to reconstruct sparse semantic maps and predict robot states",
+        "Leverages the lightweight version of You Only Look Once v2.0 (YOLO2) trained on the COCO dataset for object detection due to its real-time and computationally effective performance",
+        "Could provide results that were on par with those of well-known VSLAM methods"
+      ],
+      "cons": [
+        "Only a small number of objects (e.g., chairs, books, and laptops) can be used by their VSLAM system to build a semantic map of the surrounding area"
+      ]
+    }
+  },
+  "Edge-SLAM (Ben Ali et al.)": {
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Suggested using edge computing to enable the offloading of resource-intensive operations to the cloud and reduce the computational burden on the robot",
+        "Modified the architecture of ORB-SLAM 2.0 by maintaining the tracking module on the robot and delegating the remainder to the edge",
+        "Can maintain both a local and a global map",
+        "Could still execute properly without sacrificing accuracy with fewer resources available"
+      ],
+      "cons": [
+        "Architecture’s complexity due to the decoupling of various SLAM modules"
+      ]
+    }
+  },
+  "OV2SLAM": {
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Works with monocular and stereo-vision cameras",
+        "Lessens the computational load by limiting the extraction of features to keyframes and monitoring them in subsequent frames by eliminating photo-metric errors",
+        "Hybrid strategy that combines the virtues of the direct and indirect categories of VSLAM algorithms",
+        "Surpasses several popular techniques in terms of performance and accuracy"
+      ],
+      "cons": []
+    }
+  },
+  "iRotate": {
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Active technique for omnidirectional robots with RGB-D cameras",
+        "Includes a module for spotting obstructions in the camera’s area of vision",
+        "Primary objective is to lessen the distance the robot must go to map the environment by offering observation coverage of previously unexplored places and previously visited locations",
+        "Uses a VSLAM framework with graph features as its back-end",
+        "Could attain outcomes that were on par with those of cutting-edge VSLAM methods"
+      ],
+      "cons": [
+        "Robot might face start-stop cases in which the local paths are re-planned"
+      ]
+    }
+  },
+  "TextSLAM": {
+    "sensors-22-09297-with-cover.pdf": {
+      "pros": [
+        "Text-based VSLAM system that incorporates text items retrieved from the scene using the FAST corner detection technique in the SLAM pipeline",
+        "Uses texts as reliable visual fiducial markers",
+        "Parametrizes texts after the first frame in which they are found",
+        "Projects the 3D text object onto the target image to locate it again",
+        "Presented a new three-variable parameterization technique for initializing instantaneous text features"
+      ],
+      "cons": [
+        "Cannot operate in text-free surroundings",
+        "Difficulty interpreting short letters",
+        "Requires the storage of enormous text dictionaries"
+      ]
+    }
+  }
+}
