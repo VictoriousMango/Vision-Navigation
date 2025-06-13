@@ -25,7 +25,7 @@ class featureDetection:
         """
         self.SIFT_init = cv2.SIFT_create(nfeatures=500)
         self.FAST_init = cv2.FastFeatureDetector_create(threshold=30, nonmaxSuppression=True)
-        self.ORB_init = cv2.ORB_create(nfeatures=1000)
+        self.ORB_init = cv2.ORB_create(nfeatures=25, scaleFactor=1.2, nlevels=8, edgeThreshold=31, firstLevel=0, WTA_K=2, scoreType=cv2.ORB_HARRIS_SCORE, patchSize=31)
         self.BRISK_init = cv2.BRISK_create(thresh=30)
 
     def FD_SIFT(self, frame):
@@ -42,8 +42,8 @@ class featureDetection:
             frame = cv2.drawKeypoints(frame, keypoints, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
             return (keypoints, frame)
         
-    def FD_ORB(self, frame):
-        img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    def FD_ORB(self, frame, color=True):
+        img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) if color else frame
         keypoints, descriptors = self.ORB_init.detectAndCompute(img, None)
         if keypoints is not None:
             frame = cv2.drawKeypoints(frame, keypoints, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
@@ -55,6 +55,9 @@ class featureDetection:
         if keypoints is not None:
             frame = cv2.drawKeypoints(frame, keypoints, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
             return (keypoints, descriptors, frame)
+    def FD_AffineORB(self, frame):
+        return self.FD_ORB(transformations.T_Affine(self, frame), color=False)
+        # return (keypoints, descriptors, cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR))
 
 class featureMatching:
     def __init__(self):
@@ -85,13 +88,13 @@ class Pipeline(transformations, featureDetection, featureMatching):
                     [  0.0000,   0.0000,   1.0000]
                 ])
         self.trajectory = [ np . eye (4) [:3]]
+        self.trajectory_path = []
 
 
     def VisualOdometry(self, frame, FeatureDetector=None, FeatureMatcher=None, Transformation1=None, Transformation2=None):
         matches, pts_prev, pts_curr = [], None, None
         essential_matrix, fundamental_matrix = None, None
-        trajectory_map = np.zeros((600, 600, 3), dtype=np.uint8)
-
+        
         # Feature Detection
         FD = getattr(self, FeatureDetector, None)
         if FD is not None:
@@ -149,9 +152,10 @@ class Pipeline(transformations, featureDetection, featureMatching):
 
                 # Draw trajectory (x, z)
                 x, z = int(global_pose[0, 3]*10 + 300), int(global_pose[2, 3]*10 + 300)
-                cv2.circle(trajectory_map, (x, z), 2, (0, 255, 0), -1)
+                
+                self.trajectory_path.append((x, z))
 
-        return frame, essential_matrix, fundamental_matrix, trajectory_map, used_detector
+        return frame, essential_matrix, fundamental_matrix, self.trajectory_path, used_detector
 
 
 
