@@ -405,4 +405,4 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 venv
-*.csv
+results/*.csv
