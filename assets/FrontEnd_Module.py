@@ -327,8 +327,8 @@ class Pipeline(transformations, featureDetection, featureMatching, CameraMatrice
                     self.trajectory.append(self.current_pose[:3])
                     
                     # Extract position for path
-                    x, y, z = self.current_pose[0, 3], self.current_pose[1, 3], self.current_pose[2, 3]
-                    self.trajectory_path.append((x, z))
+                    x, y, z = -self.current_pose[0, 3], self.current_pose[1, 3], self.current_pose[2, 3]
+                    self.trajectory_path.append((x, y, z))
                 else:
                     print("⚠️ Motion validation failed - skipping frame")
 

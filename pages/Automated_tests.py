@@ -5,6 +5,8 @@ import pandas as pd
 import os
 from PIL import Image
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.express as px
 from assets.FrontEnd_Module import Pipeline, KITTIDataset
 import random
 import logging
@@ -158,8 +160,10 @@ def create_poses_dataframe(trajectory, trajectory_GT):
     data = {
         "Frame": list(range(min_len)),
         "Predicted_X": traj_data[:, 0] if traj_data.shape[1] > 0 else [0] * min_len,
-        "Predicted_Z": traj_data[:, 1] if traj_data.shape[1] > 1 else [0] * min_len,
+        "Predicted_Y": traj_data[:, 1] if traj_data.shape[1] > 0 else [0] * min_len,
+        "Predicted_Z": traj_data[:, 2] if traj_data.shape[1] > 1 else [0] * min_len,
         "Ground_Truth_X": gt_data[:, 0],
+        "Ground_Truth_Y": gt_data[:, 1],
         "Ground_Truth_Z": gt_data[:, 2],
     }
     
@@ -281,18 +285,68 @@ def process_sequence(sequence, show_table, batch_size):
         success_msg = "Ground truth poses loaded successfully"
         log_success(success_msg)
         
-        fig = plt.figure(figsize=(12, 3))
-        ax1 = fig.add_subplot(131)
-        ax1.plot(trajectory_GT[:, 0], trajectory_GT[:, 2], 'b-', linewidth=2, alpha=0.7)
-        ax1.scatter(trajectory_GT[0, 0], trajectory_GT[0, 2], color='green', s=100, label='Start', zorder=5)
-        ax1.scatter(trajectory_GT[-1, 0], trajectory_GT[-1, 2], color='red', s=100, label='End', zorder=5)
-        ax1.set_xlabel('X (m)')
-        ax1.set_ylabel('Z (m)')
-        ax1.set_title('Ground Truth Trajectory (X-Z plane)')
-        ax1.grid(True, alpha=0.3)
-        ax1.legend()
-        ax1.axis('equal')
-        col1.pyplot(fig, use_container_width=False)
+        # Plotly 3D Trajectory Plot (Beautiful)
+        fig = go.Figure()
+
+        # Main trajectory line
+        fig.add_trace(go.Scatter3d(
+            x=trajectory_GT[:, 0],
+            y=trajectory_GT[:, 2],  # Z as horizontal axis (floor)
+            z=trajectory_GT[:, 1],  # Y as height
+            mode='lines',
+            line=dict(color='royalblue', width=6),
+            name='Trajectory'
+        ))
+
+        # Start point
+        fig.add_trace(go.Scatter3d(
+            x=[trajectory_GT[0, 0]],
+            y=[trajectory_GT[0, 2]],
+            z=[trajectory_GT[0, 1]],
+            mode='markers+text',
+            marker=dict(size=8, color='green', symbol='circle'),
+            name='Start',
+            text=['Start'],
+            textposition='top center'
+        ))
+
+        # End point
+        fig.add_trace(go.Scatter3d(
+            x=[trajectory_GT[-1, 0]],
+            y=[trajectory_GT[-1, 2]],
+            z=[trajectory_GT[-1, 1]],
+            mode='markers+text',
+            marker=dict(size=8, color='red', symbol='circle'),
+            name='End',
+            text=['End'],
+            textposition='top center'
+        ))
+
+        fig.update_layout(
+            scene=dict(
+                xaxis_title='X (m)',
+                yaxis_title='Z (m)',  # Z as floor axis
+                zaxis_title='Y (m)',  # Y as height
+                xaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                yaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                zaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                aspectmode='data',
+                camera=dict(
+                    eye=dict(x=1, y=-5, z=2)
+                ),
+                bgcolor='rgba(0, 0, 0, 0)'
+            ),
+            title=dict(
+                text='Ground Truth Trajectory (3D)',
+                font=dict(size=22, color='white')
+            ),
+            legend=dict(
+                x=0.02, y=0.98, bgcolor='rgba(255,255,255,0.7)', bordercolor='black'
+            ),
+            margin=dict(l=0, r=0, b=0, t=40)
+        )
+
+        col1.plotly_chart(fig, use_container_width=True)
         
     except Exception as e:
         error_msg = f"Error reading pose file: {str(e)}"
@@ -364,17 +418,65 @@ def process_sequence(sequence, show_table, batch_size):
 
                     if st.session_state.trajectory and len(st.session_state.trajectory) > 1:
                         traj_np = np.array(st.session_state.trajectory)
-                        fig, ax = plt.subplots(figsize=(8, 6))
-                        ax.plot(traj_np[:, 0], traj_np[:, 1], marker='o', linewidth=1, markersize=3, color='green')
-                        ax.plot(trajectory_GT[:, 0], trajectory_GT[:, 2], 'b-', linewidth=2, alpha=0.7, label='Ground Truth')
-                        ax.set_title(f"2D Camera Trajectory ({feature_detector})")
-                        ax.set_xlabel("X")
-                        ax.set_ylabel("Z")
-                        ax.grid(True)
-                        ax.axis('equal')
-                        ax.legend()
-                        traj_frame.pyplot(fig)
-                        plt.close(fig)
+                        # Create 3D scatter plot for traj_np (points)
+                        scatter_traj = go.Scatter3d(
+                            x=traj_np[:, 0],
+                            y=traj_np[:, 2],
+                            z=traj_np[:, 1],
+                            mode='lines+markers',
+                            marker=dict(size=2, color='red'),
+                            line=dict(width=1, color='red'),
+                            name='Estimated Trajectory'
+                        )
+                        # Create 3D line plot for trajectory_GT (ground truth)
+                        scatter_gt = go.Scatter3d(
+                            x=trajectory_GT[:len(traj_path), 0],
+                            y=trajectory_GT[:len(traj_path), 2],
+                            z=trajectory_GT[:len(traj_path), 1],
+                            mode='lines+markers',
+                            line=dict(width=4, color='green'),
+                            marker=dict(size=4, color='green'),
+                            opacity=0.7,
+                            name='Ground Truth'
+                        )
+                        # Create figure
+                        fig = go.Figure(data=[scatter_traj, scatter_gt])
+                        # Update layout
+                        fig.update_layout(
+                            scene=dict(
+                                xaxis_title='X (m)',
+                                yaxis_title='Z (m)',  # Z as floor axis
+                                zaxis_title='Y (m)',  # Y as height
+                                xaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                                yaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                                zaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                                aspectmode='data',
+                                camera=dict(
+                                    eye=dict(x=1, y=-5, z=10)
+                                ),
+                                bgcolor='rgba(0, 0, 0, 0)'
+                            ),
+                            title=dict(
+                                text='Ground Truth Trajectory (3D)',
+                                font=dict(size=22, color='white')
+                            ),
+                            legend=dict(
+                                x=0.02, y=0.98, bgcolor='rgba(255,255,255,0.7)', bordercolor='black'
+                            ),
+                            margin=dict(l=0, r=0, b=0, t=40)
+                        )
+                        traj_frame.plotly_chart(fig, use_container_width=True)
+                        # fig, ax = plt.subplots(figsize=(8, 6))
+                        # ax.plot(traj_np[:, 0], traj_np[:, 1], marker='o', linewidth=1, markersize=3, color='green')
+                        # ax.plot(trajectory_GT[:, 0], trajectory_GT[:, 2], 'b-', linewidth=2, alpha=0.7, label='Ground Truth')
+                        # ax.set_title(f"2D Camera Trajectory ({feature_detector})")
+                        # ax.set_xlabel("X")
+                        # ax.set_ylabel("Z")
+                        # ax.grid(True)
+                        # ax.axis('equal')
+                        # ax.legend()
+                        # traj_frame.pyplot(fig)
+                        # plt.close(fig)
 
                     with text_placeholder.container():
                         col1, col2, col3 = st.columns(3)
