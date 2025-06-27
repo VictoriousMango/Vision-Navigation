@@ -114,7 +114,7 @@ with st.sidebar:
     run_all = st.toggle("Run All Sequences (00-10)", value=False)
     run_single = st.toggle("Run Single Sequence", value=False, disabled=run_all)
     sequence = st.selectbox("Select Sequence", [f"{i:02d}" for i in range(11)], disabled=run_all)
-    batch_size = st.number_input("Batch Size", min_value=100, max_value=10000, value=500, step=100)    
+    batch_size = st.number_input("Batch Size", min_value=10, max_value=10000, value=500, step=100)    
     # Add option to control table display
     show_table = st.checkbox("Show Poses Table", value=True)
 
@@ -168,10 +168,10 @@ def create_poses_dataframe(trajectory, trajectory_GT):
     }
     
     data["Error_X"] = [np.sqrt((p - g)**2) for p, g in zip(data["Predicted_X"], data["Ground_Truth_X"])]
+    data["Error_Y"] = [np.sqrt((p - g)**2) for p, g in zip(data["Predicted_Y"], data["Ground_Truth_Y"])]
     data["Error_Z"] = [np.sqrt((p - g)**2) for p, g in zip(data["Predicted_Z"], data["Ground_Truth_Z"])]
     
     df = pd.DataFrame(data)
-    logger.info(f"Created poses dataframe with {len(df)} rows")
     return df
 
 # Function to save dataframe as CSV
@@ -187,7 +187,6 @@ def save_dataframe_to_csv(df, sequence, feature_detector, output_dir="results"):
     
     csv_filename = f"{output_dir}/{sequence}_image_2_{feature_detector}.csv"
     df.to_csv(csv_filename, index=False)
-    logger.info(f"Saved dataframe to CSV: {csv_filename}")
     return csv_filename
 
 # Function to check if we should save CSV
@@ -212,18 +211,25 @@ def display_poses_table(poses_df, current_frame, totalFrames):
         st.dataframe(poses_df, use_container_width=True)
         
         if len(poses_df) > 1:
-            col1, col2, col3, col4 = st.columns(4)
+            col1, col2, col3, col4, col5 = st.columns(5)
+            mean_x = poses_df["Error_X"].mean()
+            mean_y = poses_df["Error_Y"].mean()
+            mean_z = poses_df["Error_Z"].mean()
+            mean_Error = f"{(mean_x + mean_y + mean_z)/3:.3f}"
             with col1:
                 st.metric("Frames Processed", len(poses_df))
             with col2:
                 st.metric("Mean Error X", f"{poses_df['Error_X'].mean():.3f}")
             with col3:
-                st.metric("Mean Error Z", f"{poses_df['Error_Z'].mean():.3f}")
+                st.metric("Mean Error Y", f"{poses_df['Error_Y'].mean():.3f}")
             with col4:
-                st.metric("Current Frame", current_frame)
+                st.metric("Mean Error Z", f"{poses_df['Error_Z'].mean():.3f}")
+            with col5:
+                st.metric("Mean Error", mean_Error)
 
 # Function to process a single sequence
 def process_sequence(sequence, show_table, batch_size):
+    start_time = datetime.now()
     logger.info(f"Starting processing for sequence {sequence}")
     sequence_dir = os.path.join(BASE_DIR, sequence, "image_2")
     calib_file = os.path.join(BASE_DIR, sequence, "calib2.txt")
@@ -521,7 +527,9 @@ def process_sequence(sequence, show_table, batch_size):
                 mse_results.append({
                     "Sequence": sequence,
                     "Feature_Detector": feature_detector,
+                    "Time Taken": (datetime.now() - start_time).total_seconds(),
                     "MSE_X": st.session_state.poses_dataframe["Error_X"].mean() if not st.session_state.poses_dataframe.empty else 0,
+                    "MSE_Y": st.session_state.poses_dataframe["Error_Y"].mean() if not st.session_state.poses_dataframe.empty else 0,
                     "MSE_Z": st.session_state.poses_dataframe["Error_Z"].mean() if not st.session_state.poses_dataframe.empty else 0,
                 })
                 
@@ -556,6 +564,7 @@ if run_all:
         mse_df = pd.DataFrame(all_mse_results)
         st.subheader("Mean Squared Error Results (All Sequences)")
         st.dataframe(mse_df)
+        mse_df.to_csv("results/all_sequences_mse_results.csv", index=False)
     
     success_msg = "Completed processing all sequences (00-10)!"
     log_success(success_msg)
@@ -568,6 +577,7 @@ elif run_single:
         mse_df = pd.DataFrame(mse_results)
         st.subheader("Mean Squared Error Results")
         st.dataframe(mse_df)
+        mse_df.to_csv(f"results/sequence_{sequence}_mse_results.csv", index=False)
     
     if st.session_state.trajectory:
         success_msg = f"Sequence {sequence} processing completed! Final trajectory has {len(st.session_state.trajectory)} points."

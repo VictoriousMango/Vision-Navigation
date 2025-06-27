@@ -10,7 +10,7 @@ from pathlib import Path
 import logging
 from datetime import datetime
 from typing import Dict, List, Tuple, Optional
-import seaborn as sns
+# import seaborn as sns
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -55,7 +55,6 @@ class DataLoader:
         except Exception as e:
             logger.error(f"Error loading file structure: {e}")
             st.error(f"Error loading files: {e}")
-        
         return files
     
     @st.cache_data(ttl=CACHE_DURATION)
@@ -87,7 +86,17 @@ class AdvancedAnalysis:
     def get_single_analysis(self, sequence: str, feature_detector: str) -> Dict:
         """Get comprehensive analysis for a single sequence-detector combination"""
         data = self.data_loader.load_csv_data(sequence, feature_detector)
-        
+        timeTaken = None
+        try:
+            df = pd.read_csv("results/all_sequences_mse_results.csv")
+            df['Sequence'] = df['Sequence'].apply(lambda x: f"{int(x):02d}")
+            # st.dataframe(df, use_container_width=True)
+            condition = (df['Sequence'] == sequence) & (df['Feature_Detector'] == feature_detector)
+            identifiedRow = df[condition]
+            timeTaken = identifiedRow["Time Taken"].iloc[0]
+        except Exception as e:
+            print(f"Error reading time taken from CSV: {e}")
+            timeTaken = 0
         if data is None or data.empty:
             return {"error": "No data available"}
         
@@ -97,17 +106,23 @@ class AdvancedAnalysis:
                 "feature_detector": feature_detector,
                 "total_frames": len(data),
                 "mean_error_x": data['Error_X'].mean(),
+                "mean_error_y": data['Error_Y'].mean(),
                 "mean_error_z": data['Error_Z'].mean(),
                 "std_error_x": data['Error_X'].std(),
+                "std_error_y": data['Error_Y'].std(),
                 "std_error_z": data['Error_Z'].std(),
                 "max_error_x": data['Error_X'].max(),
+                "max_error_y": data['Error_Y'].max(),
                 "max_error_z": data['Error_Z'].max(),
                 "min_error_x": data['Error_X'].min(),
+                "min_error_y": data['Error_Y'].min(),
                 "min_error_z": data['Error_Z'].min(),
                 "median_error_x": data['Error_X'].median(),
+                "median_error_y": data['Error_Y'].median(),
                 "median_error_z": data['Error_Z'].median(),
-                "total_error": 0.5 * (data['Error_X'].mean() + data['Error_Z'].mean()),
-                "rmse": np.sqrt(0.5 * (data['Error_X']**2 + data['Error_Z']**2).mean()),
+                "total_error": float(f"{(data['Error_X'].mean() + data['Error_Y'].mean() + data['Error_Z'].mean())/3:.3f}"),
+                "rmse": np.sqrt((data['Error_X']**2 + data["Error_Y"]**2 + data['Error_Z']**2).mean()),
+                "Total Time Taken": timeTaken,
                 "data": data
             }
             
@@ -137,12 +152,16 @@ class AdvancedAnalysis:
                         "Feature_Detector": feature_detector,
                         "Total_Frames": analysis["total_frames"],
                         "Mean_Error_X": analysis["mean_error_x"],
+                        "Mean_Error_Y": analysis["mean_error_y"],
                         "Mean_Error_Z": analysis["mean_error_z"],
                         "Std_Error_X": analysis["std_error_x"],
+                        "Std_Error_Y": analysis["std_error_y"],
                         "Std_Error_Z": analysis["std_error_z"],
                         "Total_Error": analysis["total_error"],
                         "RMSE": analysis["rmse"],
+                        "Total Time Taken": analysis["Total Time Taken"],
                         "Max_Error_X": analysis["max_error_x"],
+                        "Max_Error_Y": analysis["max_error_y"],
                         "Max_Error_Z": analysis["max_error_z"],
                         "Trajectory_Length": analysis.get("trajectory_length", 0),
                         "Error_Per_Meter": analysis.get("error_per_meter", 0)
@@ -158,7 +177,7 @@ class AdvancedAnalysis:
         rankings = {}
         
         # Rank by different metrics
-        metrics = ["Total_Error", "RMSE", "Error_Per_Meter", "Mean_Error_X", "Mean_Error_Z"]
+        metrics = ["Total_Error", "RMSE", "Error_Per_Meter", "Mean_Error_X", "Mean_Error_Y", "Mean_Error_Z", "Total Time Taken"]
         
         for metric in metrics:
             if metric in comparative_df.columns:
@@ -173,7 +192,7 @@ class AdvancedAnalysis:
         if not comparative_df.empty:
             # Normalize metrics to 0-1 scale
             normalized_df = comparative_df.copy()
-            score_metrics = ["Total_Error", "RMSE"]
+            score_metrics = ["Total_Error", "RMSE", "Total Time Taken"]
             
             for metric in score_metrics:
                 if metric in normalized_df.columns:
@@ -187,11 +206,12 @@ class AdvancedAnalysis:
             # Calculate composite score (lower is better)
             normalized_df["Composite_Score"] = (
                 normalized_df.get("Total_Error_norm", 0) + 
-                normalized_df.get("RMSE_norm", 0)
+                normalized_df.get("RMSE_norm", 0) +
+                normalized_df.get("Total Time Taken_norm", 0)
             ) / len(score_metrics)
             
             overall_best = normalized_df.nsmallest(top_n, "Composite_Score")
-            rankings["Overall"] = overall_best[["Sequence", "Feature_Detector", "Composite_Score", "Total_Error", "RMSE"]].to_dict('records')
+            rankings["Overall"] = overall_best[["Sequence", "Feature_Detector", "Composite_Score", "Total_Error", "RMSE", "Total Time Taken"]].to_dict('records')
         
         return rankings
 
@@ -204,9 +224,10 @@ class VisualizationEngine:
         fig = go.Figure()
         
         # Add predicted trajectory
-        fig.add_trace(go.Scatter(
+        fig.add_trace(go.Scatter3d(
             x=data['Predicted_X'], 
             y=data['Predicted_Z'],
+            z=data['Predicted_Y'],
             mode='lines+markers',
             name='Predicted Trajectory',
             line=dict(color='blue', width=2),
@@ -214,9 +235,10 @@ class VisualizationEngine:
         ))
         
         # Add ground truth trajectory
-        fig.add_trace(go.Scatter(
+        fig.add_trace(go.Scatter3d(
             x=data['Ground_Truth_X'], 
             y=data['Ground_Truth_Z'],
+            z=data['Ground_Truth_Y'],
             mode='lines+markers',
             name='Ground Truth',
             line=dict(color='red', width=2),
@@ -224,11 +246,27 @@ class VisualizationEngine:
         ))
         
         fig.update_layout(
-            title="Trajectory Comparison: Predicted vs Ground Truth",
-            xaxis_title="X Position (m)",
-            yaxis_title="Z Position (m)",
-            hovermode='closest',
-            showlegend=True
+            scene=dict(
+                xaxis_title='X (m)',
+                yaxis_title='Z (m)',  # Z as floor axis
+                zaxis_title='Y (m)',  # Y as height
+                xaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                yaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                zaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                aspectmode='data',
+                camera=dict(
+                    eye=dict(x=1, y=-5, z=2)
+                ),
+                bgcolor='rgba(0, 0, 0, 0)'
+            ),
+            title=dict(
+                text='Ground Truth Trajectory (3D)',
+                font=dict(size=22, color='white')
+            ),
+            legend=dict(
+                x=0.02, y=0.98, bgcolor='rgba(255,255,255,0.7)', bordercolor='black'
+            ),
+            margin=dict(l=0, r=0, b=0, t=40)
         )
         
         return fig
@@ -237,8 +275,8 @@ class VisualizationEngine:
     def create_error_distribution(data: pd.DataFrame) -> go.Figure:
         """Create interactive error distribution plot"""
         fig = make_subplots(
-            rows=2, cols=1,
-            subplot_titles=('Error in X Direction', 'Error in Z Direction'),
+            rows=3, cols=1,
+            subplot_titles=('Error in X Direction', 'Error in Y Direction', 'Error in Z Direction'),
             vertical_spacing=0.1
         )
         
@@ -248,9 +286,18 @@ class VisualizationEngine:
             y=data['Error_X'],
             mode='lines',
             name='Error X',
-            line=dict(color='blue')
+            line=dict(color='red')
         ), row=1, col=1)
         
+        # Z direction errors
+        fig.add_trace(go.Scatter(
+            x=data['Frame'], 
+            y=data['Error_Y'],
+            mode='lines',
+            name='Error Y',
+            line=dict(color='red')
+        ), row=2, col=1)
+
         # Z direction errors
         fig.add_trace(go.Scatter(
             x=data['Frame'], 
@@ -258,7 +305,7 @@ class VisualizationEngine:
             mode='lines',
             name='Error Z',
             line=dict(color='red')
-        ), row=2, col=1)
+        ), row=3, col=1)
         
         fig.update_layout(
             title="Error Distribution Across Frames",
@@ -379,6 +426,13 @@ def main():
                     analysis_result['max_error_x'],
                     analysis_result['median_error_x']
                 ],
+                "Error Y": [
+                    analysis_result['mean_error_y'],
+                    analysis_result['std_error_y'],
+                    analysis_result['min_error_y'],
+                    analysis_result['max_error_y'],
+                    analysis_result['median_error_y']
+                ],
                 "Error Z": [
                     analysis_result['mean_error_z'],
                     analysis_result['std_error_z'],
@@ -410,17 +464,21 @@ def main():
         
         # Statistical summary
         st.subheader("📈 Statistical Summary")
-        col1, col2 = st.columns(2)
+        col1, col2, col3 = st.columns(3)
         
         with col1:
             st.write("**Best Performers (Lowest Total Error):**")
             best_performers = comparative_df.nsmallest(5, 'Total_Error')[['Sequence', 'Feature_Detector', 'Total_Error']]
             st.dataframe(best_performers, use_container_width=True)
-        
         with col2:
             st.write("**Most Consistent (Lowest RMSE):**")
             most_consistent = comparative_df.nsmallest(5, 'RMSE')[['Sequence', 'Feature_Detector', 'RMSE']]
             st.dataframe(most_consistent, use_container_width=True)
+        with col3:
+            st.write("**Fastest Detectors:**")
+            most_consistent = comparative_df.nsmallest(5, 'Total Time Taken')[['Sequence', 'Feature_Detector', 'Total Time Taken']]
+            st.dataframe(most_consistent, use_container_width=True)
+        
     
     elif analysis_mode == "Best Feature Detectors":
         st.header("🏆 Best Feature Detectors Identification")
@@ -444,6 +502,7 @@ def main():
         
         if "Overall" in rankings:
             overall_df = pd.DataFrame(rankings["Overall"])
+            overall_df.index = overall_df.index + 1
             st.dataframe(overall_df, use_container_width=True)
             
             # Highlight the best
@@ -461,6 +520,7 @@ def main():
                 with ranking_cols[i % 3]:
                     st.write(f"**Best by {category}:**")
                     ranking_df = pd.DataFrame(ranking_data)
+                    ranking_df.index = ranking_df.index + 1
                     st.dataframe(ranking_df, use_container_width=True)
         
         # Summary insights
@@ -471,7 +531,10 @@ def main():
         for category, ranking_data in rankings.items():
             for entry in ranking_data:
                 detector = entry['Feature_Detector']
-                feature_counts[detector] = feature_counts.get(detector, 0) + 1
+                if detector not in feature_counts:
+                    feature_counts[detector] = 0
+                else:
+                    feature_counts[detector] = feature_counts.get(detector, 0) + 1
         
         if feature_counts:
             best_detector = max(feature_counts, key=feature_counts.get)
