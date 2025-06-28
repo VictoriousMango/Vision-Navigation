@@ -82,8 +82,8 @@ if "poses_dataframe" not in st.session_state:
 # Placeholders
 stframe = st.empty()
 col1, col2 = st.columns(2)
-traj_frame = col1.empty()
-text_placeholder = col2.empty()
+traj_frame = st.empty()
+text_placeholder = st.empty()
 
 # Add placeholder for the dataframe table
 table_placeholder = st.empty()
@@ -361,9 +361,12 @@ def process_sequence(sequence, show_table, batch_size):
 
     # Process each feature detector and matcher pair
     mse_results = []
+    numberOfDetectors = sum([len(pair["featureDetector"]) for pair in test_pairs])
+    current = 0
     for pair in test_pairs:
         feature_matcher = pair["featureMatcher"]
         for feature_detector in pair["featureDetector"]:
+            current += 1
             logger.info(f"Processing with feature detector: {feature_detector}, matcher: {feature_matcher}")
             
             st.session_state.trajectory = []
@@ -490,12 +493,18 @@ def process_sequence(sequence, show_table, batch_size):
                             st.subheader("Current Image")
                             st.write(f"**File:** {filename}")
                             st.write(f"**Progress:** {i+1}/{len(images)}")
+                            # st.progress(i+1/len(images))
                         with col2:
                             st.subheader("Feature Detector")
                             st.code(detector_used)
                         with col3:
                             st.subheader("Trajectory Points")
                             st.write(f"Total: {len(st.session_state.trajectory) if st.session_state.trajectory else 0}")
+                        col11, col12 = st.columns(2)
+                        col11.metric("Sequence", sequence)
+                        col12.metric("Feature Detector", feature_detector)
+                        st.progress(current/numberOfDetectors)
+
                         
                         col21, col22 = st.columns(2)
                         if E is not None:

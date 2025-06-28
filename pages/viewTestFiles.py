@@ -122,7 +122,7 @@ class AdvancedAnalysis:
                 "median_error_z": data['Error_Z'].median(),
                 "total_error": float(f"{(data['Error_X'].mean() + data['Error_Y'].mean() + data['Error_Z'].mean())/3:.3f}"),
                 "rmse": np.sqrt((data['Error_X']**2 + data["Error_Y"]**2 + data['Error_Z']**2).mean()),
-                "Total Time Taken": timeTaken,
+                "Total Time Taken": timeTaken/len(df),
                 "data": data
             }
             
@@ -320,13 +320,13 @@ class VisualizationEngine:
         return fig
     
     @staticmethod
-    def create_comparative_heatmap(comparative_df: pd.DataFrame) -> go.Figure:
+    def create_comparative_heatmap(comparative_df: pd.DataFrame, values: str) -> go.Figure:
         """Create heatmap comparing feature detectors across sequences"""
         if comparative_df.empty:
             return go.Figure()
         
         # Pivot data for heatmap
-        pivot_data = comparative_df.pivot(index='Feature_Detector', columns='Sequence', values='Total_Error')
+        pivot_data = comparative_df.pivot(index='Feature_Detector', columns='Sequence', values=values)
         
         fig = go.Figure(data=go.Heatmap(
             z=pivot_data.values,
@@ -336,11 +336,11 @@ class VisualizationEngine:
             text=np.round(pivot_data.values, 3),
             texttemplate="%{text}",
             textfont={"size": 10},
-            colorbar=dict(title="Total Error")
+            colorbar=dict(title=values)
         ))
         
         fig.update_layout(
-            title="Feature Detector Performance Across Sequences",
+            title=f"Feature Detector Performance Across Sequences - {values}",
             xaxis_title="Sequence",
             yaxis_title="Feature Detector"
         )
@@ -459,8 +459,11 @@ def main():
         
         # Heatmap visualization
         st.subheader("🌡️ Performance Heatmap")
-        heatmap_fig = viz_engine.create_comparative_heatmap(comparative_df)
-        st.plotly_chart(heatmap_fig, use_container_width=True)
+        col1, col2 = st.columns(2)
+        heatmap_fig_TotalError = viz_engine.create_comparative_heatmap(comparative_df, 'Total_Error')
+        col1.plotly_chart(heatmap_fig_TotalError, use_container_width=True)
+        heatmap_figTimeTaken = viz_engine.create_comparative_heatmap(comparative_df, 'Total Time Taken')
+        col2.plotly_chart(heatmap_figTimeTaken, use_container_width=True)
         
         # Statistical summary
         st.subheader("📈 Statistical Summary")
