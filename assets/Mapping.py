@@ -3,11 +3,16 @@ import cv2
 import g2o
 
 class LocalMapper:
-    def __init__(self, camera_matrix):
-        self.camera_matrix = camera_matrix
+    def __init__(self):
+        self.camera_matrix = None
         self.map_points = []
+        # Added New => for Mapping
         self.keyframes = []
-        
+        self.last_keyframe_pose = np.eye(4)
+    def setCameraMatrix(self, camera_matrix):
+        """Set the camera intrinsic matrix"""
+        self.camera_matrix = camera_matrix
+
     def triangulate_points(self, pose1, pose2, points1, points2):
         """Triangulate 3D points from matched features"""
         # Create projection matrices
@@ -37,8 +42,13 @@ class KeyFrame:
 
 class LocalBundleAdjustment:
     def __init__(self):
+        self.keyframe_interval = 10 # Temporal Threshold
         self.optimizer = g2o.SparseOptimizer()
-        self.optimizer.set_algorithm(g2o.OptimizationAlgorithmLevenberg())
+        # Create a linear solver
+        solver = g2o.BlockSolverSE3(g2o.LinearSolverDenseSE3())
+        # Create the optimization algorithm with the solver
+        algorithm = g2o.OptimizationAlgorithmLevenberg(solver)
+        self.optimizer.set_algorithm(algorithm)
         
     def optimize_local_map(self, keyframes, map_points):
         """Optimize poses and 3D points using bundle adjustment"""
@@ -46,7 +56,10 @@ class LocalBundleAdjustment:
         for i, kf in enumerate(keyframes):
             pose_vertex = g2o.VertexSE3Expmap()
             pose_vertex.set_id(i)
-            pose_vertex.set_estimate(g2o.SE3Quat(kf.pose))
+            # Extract rotation (3x3) and translation (3x1) from 4x4 pose matrix
+            R = kf.pose[:3, :3]
+            t = kf.pose[:3, 3].reshape(3, 1)
+            pose_vertex.set_estimate(g2o.SE3Quat(R, t))
             self.optimizer.add_vertex(pose_vertex)
         
         # Add 3D points as vertices and create projection edges
@@ -54,7 +67,7 @@ class LocalBundleAdjustment:
         for mp in map_points:
             point_vertex = g2o.VertexPointXYZ()
             point_vertex.set_id(point_id)
-            point_vertex.set_estimate(mp.position)
+            point_vertex.set_estimate(mp)
             self.optimizer.add_vertex(point_vertex)
             point_id += 1
 class PoseGraphOptimizer:

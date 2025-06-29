@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from io import StringIO
 import random
+from assets.Mapping import LocalMapper, MapPoint, KeyFrame, LocalBundleAdjustment
 
 class transformations:
     def __init__(self):
@@ -182,25 +183,23 @@ class featureMatching:
 
         return good_matches, pts_prev, pts_curr
 
-class Pipeline(transformations, featureDetection, featureMatching, CameraMatrices):
+class Pipeline(transformations, featureDetection, featureMatching, CameraMatrices, LocalMapper, LocalBundleAdjustment):
     def __init__(self):
         transformations.__init__(self)
         featureDetection.__init__(self)
         featureMatching.__init__(self)
         CameraMatrices.__init__(self)
+        LocalMapper.__init__(self)
+        LocalBundleAdjustment.__init__(self)
         self.prev_keypoints = None
         self.prev_descriptors = None
         self.prev_frame = None
-        self.K = np.array([
-            [718.8560,   0.0000, 607.1928],
-            [  0.0000, 718.8560, 185.2157],
-            [  0.0000,   0.0000,   1.0000]
-        ])
+        self.K = None
         self.current_pose = np.eye(4)  # Current absolute pose
         self.trajectory = [np.eye(4)[:3]]
         self.trajectory_path = []
         self.scale_factor = 1.0  # For scale correction
-        
+        self.frameID = 0  # Frame ID for tracking
         # Motion filtering parameters
         self.max_translation = 5.0  # Maximum translation per frame
         self.max_rotation = 0.5     # Maximum rotation per frame (radians)
@@ -209,11 +208,12 @@ class Pipeline(transformations, featureDetection, featureMatching, CameraMatrice
         self.prev_keypoints = None
         self.prev_descriptors = None
         self.prev_frame = None
-        self.current_pose = np.eye(4)
+        self.prev_pose = np.eye(4)
         self.trajectory = [np.eye(4)[:3]]
         self.trajectory_path = []
     def set_k_intrinsic(self, k_intrinsic):
         self.K = k_intrinsic
+        self.camera_matrix = k_intrinsic
     
     def get_k_intrinsic(self):
         return self.K
@@ -247,6 +247,7 @@ class Pipeline(transformations, featureDetection, featureMatching, CameraMatrice
         return np.clip(scale, 0.1, 10.0)  # Reasonable scale bounds
     
     def VisualOdometry(self, frame, FeatureDetector=None, FeatureMatcher=None):
+        self.frameID += 1
         essential_matrix = fundamental_matrix = None
         pts_prev = pts_curr = matches = None
 
@@ -292,8 +293,15 @@ class Pipeline(transformations, featureDetection, featureMatching, CameraMatrice
                     flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS,
                     matchesThickness=2
                 )
+        else:
+            processed_frame = processed_frame_fd
+
 
         # Update previous frame info
+        triangulatedPoints = self.triangulate_points(
+            self.current_pose, self.prev_pose, 
+            pts_curr, pts_prev, self.K
+        ) if pts_prev is not None and pts_curr is not None else None
         self.prev_keypoints = keypoints
         self.prev_descriptors = descriptors
         self.prev_frame = processed_frame_fd
@@ -323,6 +331,15 @@ class Pipeline(transformations, featureDetection, featureMatching, CameraMatrice
                     # FIXED: Correct pose composition
                     self.current_pose = self.current_pose @ T_relative
                     
+                    # Added New => Storing KeyFrames for Surrounding Mapping
+                    kf = KeyFrame(
+                        pose=self.current_pose.copy(),
+                        features=keypoints,
+                        descriptors=descriptors,
+                        frame_id=self.frameID
+                    )
+                    self.keyframes.append(kf)
+                    self.map_points.append(triangulatedPoints)
                     # Store trajectory
                     self.trajectory.append(self.current_pose[:3])
                     
@@ -331,8 +348,10 @@ class Pipeline(transformations, featureDetection, featureMatching, CameraMatrice
                     self.trajectory_path.append((x, y, z))
                 else:
                     print("⚠️ Motion validation failed - skipping frame")
-
-        return processed_frame, essential_matrix, fundamental_matrix, self.trajectory_path, FeatureDetector
+        if self.frameID % self.keyframe_interval == 0:
+            # Perform local bundle adjustment
+            self.optimize_local_map(self.keyframes, self.map_points)
+        return processed_frame, essential_matrix, fundamental_matrix, self.trajectory_path, FeatureDetector, self.map_points
 
 class KITTIDataset:
     def __init__(self):

@@ -394,7 +394,7 @@ def process_sequence(sequence, show_table, batch_size):
                 try:
                     logger.debug(f"Processing frame {i+1}/{total_images}: {filename}")
                     
-                    result_frame, E, F, traj_path, detector_used = VO.VisualOdometry(
+                    result_frame, E, F, traj_path, detector_used, map_points = VO.VisualOdometry(
                         cv2.imread(img_frame),
                         FeatureDetector=feature_detector,
                         FeatureMatcher=feature_matcher
@@ -427,6 +427,8 @@ def process_sequence(sequence, show_table, batch_size):
 
                     if st.session_state.trajectory and len(st.session_state.trajectory) > 1:
                         traj_np = np.array(st.session_state.trajectory)
+                        map_points_np = np.array(map_points)
+                        # st.info(map_points)
                         # Create 3D scatter plot for traj_np (points)
                         scatter_traj = go.Scatter3d(
                             x=traj_np[:, 0],
@@ -434,7 +436,7 @@ def process_sequence(sequence, show_table, batch_size):
                             z=traj_np[:, 1],
                             mode='lines+markers',
                             marker=dict(size=2, color='red'),
-                            line=dict(width=1, color='red'),
+                            line=dict(width=2, color='red'),
                             name='Estimated Trajectory'
                         )
                         # Create 3D line plot for trajectory_GT (ground truth)
@@ -448,9 +450,18 @@ def process_sequence(sequence, show_table, batch_size):
                             opacity=0.7,
                             name='Ground Truth'
                         )
+                        # If map points are available, add them to the plot
+                        scatter_map_points = go.Scatter3d(
+                                x=map_points_np[:, 0],
+                                y=map_points_np[:, 2],
+                                z=map_points_np[:, 1],
+                                mode='markers',
+                                marker=dict(size=5, color='red', symbol='circle'),
+                                name='Map Points'
+                            )
+                            # # Add map points to the figure
                         # Create figure
                         fig = go.Figure(data=[scatter_traj, scatter_gt])
-                        # Update layout
                         fig.update_layout(
                             scene=dict(
                                 xaxis_title='X (m)',
@@ -474,7 +485,33 @@ def process_sequence(sequence, show_table, batch_size):
                             ),
                             margin=dict(l=0, r=0, b=0, t=40)
                         )
+                        # fig2 = go.Figure(data=[scatter_traj, scatter_map_points])
+                        # fig2.update_layout(
+                        #     scene=dict(
+                        #         xaxis_title='X (m)',
+                        #         yaxis_title='Z (m)',  # Z as floor axis
+                        #         zaxis_title='Y (m)',  # Y as height
+                        #         xaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                        #         yaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                        #         zaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                        #         aspectmode='data',
+                        #         camera=dict(
+                        #             eye=dict(x=1, y=-5, z=10)
+                        #         ),
+                        #         bgcolor='rgba(0, 0, 0, 0)'
+                        #     ),
+                        #     title=dict(
+                        #         text='Ground Truth Trajectory (3D)',
+                        #         font=dict(size=22, color='white')
+                        #     ),
+                        #     legend=dict(
+                        #         x=0.02, y=0.98, bgcolor='rgba(255,255,255,0.7)', bordercolor='black'
+                        #     ),
+                        #     margin=dict(l=0, r=0, b=0, t=40)
+                        # )
+                        # traj_frame1, traj_frame2 = traj_frame.columns(2)
                         traj_frame.plotly_chart(fig, use_container_width=True)
+                        # traj_frame2.plotly_chart(fig2, use_container_width=True)
                         # fig, ax = plt.subplots(figsize=(8, 6))
                         # ax.plot(traj_np[:, 0], traj_np[:, 1], marker='o', linewidth=1, markersize=3, color='green')
                         # ax.plot(trajectory_GT[:, 0], trajectory_GT[:, 2], 'b-', linewidth=2, alpha=0.7, label='Ground Truth')
