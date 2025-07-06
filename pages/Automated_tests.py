@@ -452,16 +452,16 @@ def process_sequence(sequence, show_table, batch_size):
                         )
                         # If map points are available, add them to the plot
                         scatter_map_points = go.Scatter3d(
-                                x=map_points_np[:, 0],
-                                y=map_points_np[:, 2],
-                                z=map_points_np[:, 1],
+                                x=map_points_np[:, 0][:, 0],
+                                y=map_points_np[:, 2][:, 2],
+                                z=map_points_np[:, 1][:, 1],
                                 mode='markers',
-                                marker=dict(size=5, color='red', symbol='circle'),
+                                marker=dict(size=2, color='white', symbol='x'),
                                 name='Map Points'
                             )
                             # # Add map points to the figure
                         # Create figure
-                        fig = go.Figure(data=[scatter_traj, scatter_gt])
+                        fig = go.Figure(data=[scatter_traj, scatter_gt, scatter_map_points])
                         fig.update_layout(
                             scene=dict(
                                 xaxis_title='X (m)',
@@ -509,8 +509,15 @@ def process_sequence(sequence, show_table, batch_size):
                         #     ),
                         #     margin=dict(l=0, r=0, b=0, t=40)
                         # )
-                        # traj_frame1, traj_frame2 = traj_frame.columns(2)
-                        traj_frame.plotly_chart(fig, use_container_width=True)
+                        traj_frame1, traj_frame2 = traj_frame.columns(2)
+                        traj_frame1.plotly_chart(fig, use_container_width=True)
+                        traj_frame2.metric(str(map_points is None), "No Map Points" if map_points is None else f"{len(map_points)} Map Points")
+                        # temp_x=map_points_np[:, 0][:, 0],
+                        # temp_y=map_points_np[:, 2][:, 2],
+                        # temp_z=map_points_np[:, 1][:, 1],
+                        # traj_frame2.write([temp_x, temp_y, temp_z])
+                        # traj_frame2.write([temp_x[1], temp_y[1], temp_z[1]])
+                        # traj_frame2.write([temp_x[2], temp_y[2], temp_z[2]])
                         # traj_frame2.plotly_chart(fig2, use_container_width=True)
                         # fig, ax = plt.subplots(figsize=(8, 6))
                         # ax.plot(traj_np[:, 0], traj_np[:, 1], marker='o', linewidth=1, markersize=3, color='green')

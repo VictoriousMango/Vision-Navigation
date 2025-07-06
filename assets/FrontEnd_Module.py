@@ -47,7 +47,8 @@ class CameraMatrices:
             
         if mask is None or len(mask) == 0:
             return None, None, None
-            
+
+        # Filter inliers
         prevPt_inliers = pts_prev[mask.ravel() == 1]
         currPt_inliers = pts_curr[mask.ravel() == 1]
         
@@ -97,7 +98,8 @@ class featureDetection:
         self.BRISK_init = cv2.BRISK_create()
 
     def FD_SIFT(self, frame):
-        img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        if len(frame.shape) > 2:
+            img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         
         # Apply histogram equalization for better feature detection
         img = cv2.equalizeHist(img)
@@ -246,7 +248,7 @@ class Pipeline(transformations, featureDetection, featureMatching, CameraMatrice
         scale = np.median(depths_prev / np.clip(depths_curr, 1e-6, None))
         return np.clip(scale, 0.1, 10.0)  # Reasonable scale bounds
     
-    def VisualOdometry(self, frame, FeatureDetector=None, FeatureMatcher=None):
+    def VisualOdometry(self, frame, FeatureDetector=None, FeatureMatcher=None): 
         self.frameID += 1
         essential_matrix = fundamental_matrix = None
         pts_prev = pts_curr = matches = None

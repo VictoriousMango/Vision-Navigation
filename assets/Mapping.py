@@ -42,7 +42,7 @@ class KeyFrame:
 
 class LocalBundleAdjustment:
     def __init__(self):
-        self.keyframe_interval = 10 # Temporal Threshold
+        self.keyframe_interval = 10000 # Temporal Threshold
         self.optimizer = g2o.SparseOptimizer()
         # Create a linear solver
         solver = g2o.BlockSolverSE3(g2o.LinearSolverDenseSE3())

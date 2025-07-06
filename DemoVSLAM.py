@@ -509,9 +509,9 @@ st.markdown("""
 # Preferred algorithms
 preferred_algos = [
     ("Image Acquisition", "Stereo Camera", "Provides direct depth estimation"),
-    ("Feature Detection", "ORB Features", "Fast, rotation-invariant, patent-free"),
-    ("Feature Matching", "FLANN + Ratio Test", "Fast approximate matching with reliability filtering"),
-    ("Motion Estimation", "5-Point Algorithm + RANSAC", "Robust essential matrix estimation"),
+    ("Feature Detection", "Affine SIFT Features", "Fast, rotation-invariant, patent-free"),
+    ("Feature Matching", "Brute Force + Ratio Test", "Fast approximate matching with reliability filtering"),
+    ("Motion Estimation", "5-Point Algorithm + RANSAC", "Robust fundamental matrix estimation"),
     ("Map Initialization", "Two-View + Bundle Adjustment", "Accurate initial reconstruction"),
     ("Tracking", "Feature-based + PnP", "Robust to appearance changes"),
     ("Local Mapping", "Triangulation + Local BA", "Expanding map with local optimization"),
