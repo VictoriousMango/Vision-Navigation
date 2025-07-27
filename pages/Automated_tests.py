@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.express as px
 from assets.FrontEnd_Module import Pipeline, KITTIDataset
+from assets.LoopDetection import BOVW
 import random
 import logging
 from datetime import datetime
@@ -84,19 +85,24 @@ stframe = st.empty()
 col1, col2 = st.columns(2)
 traj_frame = st.empty()
 text_placeholder = st.empty()
+loopClosure = st.empty()
+with st.sidebar:
+    panel = st.empty()
+    sequence_information = st.empty()
 
 # Add placeholder for the dataframe table
 table_placeholder = st.empty()
 
 # Initialize VO Pipeline
 VO = Pipeline()
+bovw = BOVW()
 kitti = KITTIDataset()
 logger.info("VO Pipeline and KITTI Dataset initialized")
 
 # Define feature detector and matcher pairs to test
 test_pairs = [
-    {"featureDetector": ["FD_AffineSIFT", "FD_SIFT"], "featureMatcher": "FM_BF_NORM_L2"},
-    {"featureDetector": ["FD_ORB", "FD_BRISK", "FD_AffineORB"], "featureMatcher": "FM_BF_NORM_Hamming"}
+    {"featureDetector": ["FD_SIFT"], "featureMatcher": "FM_BF_NORM_L2"}, # "FD_AffineSIFT", 
+    # {"featureDetector": ["FD_ORB", "FD_BRISK", "FD_AffineORB"], "featureMatcher": "FM_BF_NORM_Hamming"}
 ]
 
 # Base directory for KITTI dataset
@@ -109,17 +115,109 @@ logger.info(f"Pose directory set to: {POSE_DIR}")
 # -----------------------
 # Sidebar controls
 # -----------------------
-with st.sidebar:
+with panel.container():
     st.header("Pipeline Controls")
-    run_all = st.toggle("Run All Sequences (00-10)", value=False)
-    run_single = st.toggle("Run Single Sequence", value=False, disabled=run_all)
-    sequence = st.selectbox("Select Sequence", [f"{i:02d}" for i in range(11)], disabled=run_all)
-    batch_size = st.number_input("Batch Size", min_value=10, max_value=10000, value=500, step=100)    
+    panel1, panel2 = st.columns(2)
+    run_all = panel1.toggle("Run All Sequences (00-10)", value=False)
+    run_single = panel2.toggle("Run Single Sequence", value=False, disabled=run_all)
+    sequence = panel1.selectbox("Select Sequence", [f"{i:02d}" for i in range(11)], disabled=run_all)
+    
+    batch_size = st.slider("Batch Size", min_value=100, max_value=5000, value=500, step=100, disabled=run_all)
+    # batch_size = st.number_input("Batch Size", min_value=10, max_value=10000, value=500, step=100)    
     # Add option to control table display
     show_table = st.checkbox("Show Poses Table", value=True)
 
 logger.info(f"Sidebar controls set - Run All: {run_all}, Run Single: {run_single}, Sequence: {sequence}, Batch Size: {batch_size}")
 
+def show_seq_info(calib_file, pose_file):
+    with open(calib_file, 'r') as f:
+                K, P = kitti.load_calib(f)
+                VO.set_k_intrinsic(K)
+            
+    success_msg = "Calibration file loaded successfully"
+    log_success(success_msg)
+    with sequence_information.container():
+        col1 = st.empty()
+        st.subheader("Intrinsic Parameters (K)")
+        st.dataframe(VO.get_k_intrinsic())
+        st.subheader("Projection Matrix (P)")
+        st.dataframe(P)
+
+    with open(pose_file, 'r') as f:
+        poses = kitti.load_poses(f, batch_size=batch_size)
+    st.session_state.trajectory_GT = []
+    for pose in poses:
+        x, y, z = pose[0, 3], pose[1, 3], pose[2, 3]
+        st.session_state.trajectory_GT.append([x, y, z])
+    panel2.metric(label="Number of points", value=len(st.session_state.trajectory_GT))
+    trajectory_GT = np.array(st.session_state.trajectory_GT)
+
+    success_msg = "Ground truth poses loaded successfully"
+    log_success(success_msg)
+
+    # Plotly 3D Trajectory Plot (Beautiful)
+    fig = go.Figure()
+
+    # Main trajectory line
+    fig.add_trace(go.Scatter3d(
+        x=trajectory_GT[:, 0],
+        y=trajectory_GT[:, 2],  # Z as horizontal axis (floor)
+        z=trajectory_GT[:, 1],  # Y as height
+        mode='lines',
+        line=dict(color='royalblue', width=6),
+        name='Trajectory'
+    ))
+
+    # Start point
+    fig.add_trace(go.Scatter3d(
+        x=[trajectory_GT[0, 0]],
+        y=[trajectory_GT[0, 2]],
+        z=[trajectory_GT[0, 1]],
+        mode='markers+text',
+        marker=dict(size=8, color='green', symbol='circle'),
+        name='Start',
+        text=['Start'],
+        textposition='top center'
+    ))
+
+    # End point
+    fig.add_trace(go.Scatter3d(
+        x=[trajectory_GT[-1, 0]],
+        y=[trajectory_GT[-1, 2]],
+        z=[trajectory_GT[-1, 1]],
+        mode='markers+text',
+        marker=dict(size=8, color='red', symbol='circle'),
+        name='End',
+        text=['End'],
+        textposition='top center'
+    ))
+
+    fig.update_layout(
+        scene=dict(
+            xaxis_title='X (m)',
+            yaxis_title='Z (m)',  # Z as floor axis
+            zaxis_title='Y (m)',  # Y as height
+            xaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+            yaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+            zaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+            aspectmode='data',
+            camera=dict(
+                eye=dict(x=1, y=-5, z=2)
+            ),
+            bgcolor='rgba(0, 0, 0, 0)'
+        ),
+        title=dict(
+            text='Ground Truth Trajectory (3D)',
+            font=dict(size=22, color='white')
+        ),
+        legend=dict(
+            x=0.02, y=0.98, bgcolor='rgba(255,255,255,0.7)', bordercolor='black'
+        ),
+        margin=dict(l=0, r=0, b=0, t=40)
+    )
+
+    col1.plotly_chart(fig, use_container_width=True)
+    return trajectory_GT
 # -------------------
 # Dataset Processing
 # -------------------
@@ -228,17 +326,13 @@ def display_poses_table(poses_df, current_frame, totalFrames):
                 st.metric("Mean Error", mean_Error)
 
 # Function to process a single sequence
-def process_sequence(sequence, show_table, batch_size):
+def process_sequence(sequence, show_table, batch_size, trajectory_GT):
     start_time = datetime.now()
     logger.info(f"Starting processing for sequence {sequence}")
     sequence_dir = os.path.join(BASE_DIR, sequence, "image_2")
-    calib_file = os.path.join(BASE_DIR, sequence, "calib2.txt")
-    pose_file = os.path.join(POSE_DIR, f"{sequence}.txt")
+    
 
     logger.info(f"Sequence directory: {sequence_dir}")
-    logger.info(f"Calibration file: {calib_file}")
-    logger.info(f"Pose file: {pose_file}")
-
     # Load images
     try:
         images, filenames, batch_size = load_images_from_directory(sequence_dir, batch_size=batch_size)
@@ -255,107 +349,6 @@ def process_sequence(sequence, show_table, batch_size):
         
     except Exception as e:
         error_msg = f"Error loading images: {str(e)}"
-        log_error(error_msg)
-        return None
-
-    # Load calibration
-    try:
-        with open(calib_file, 'r') as f:
-            K, P = kitti.load_calib(f)
-            VO.set_k_intrinsic(K)
-        
-        success_msg = "Calibration file loaded successfully"
-        log_success(success_msg)
-        
-        col1, col2 = st.columns(2)
-        col2.subheader("Intrinsic Parameters (K)")
-        col2.dataframe(VO.get_k_intrinsic())
-        col2.subheader("Projection Matrix (P)")
-        col2.dataframe(P)
-        
-    except Exception as e:
-        error_msg = f"Error reading calibration file: {str(e)}"
-        log_error(error_msg)
-        return None
-
-    # Load ground truth poses
-    try:
-        with open(pose_file, 'r') as f:
-            poses = kitti.load_poses(f, batch_size=batch_size)
-        st.session_state.trajectory_GT = []
-        for pose in poses:
-            x, y, z = pose[0, 3], pose[1, 3], pose[2, 3]
-            st.session_state.trajectory_GT.append([x, y, z])
-        trajectory_GT = np.array(st.session_state.trajectory_GT)
-        
-        success_msg = "Ground truth poses loaded successfully"
-        log_success(success_msg)
-        
-        # Plotly 3D Trajectory Plot (Beautiful)
-        fig = go.Figure()
-
-        # Main trajectory line
-        fig.add_trace(go.Scatter3d(
-            x=trajectory_GT[:, 0],
-            y=trajectory_GT[:, 2],  # Z as horizontal axis (floor)
-            z=trajectory_GT[:, 1],  # Y as height
-            mode='lines',
-            line=dict(color='royalblue', width=6),
-            name='Trajectory'
-        ))
-
-        # Start point
-        fig.add_trace(go.Scatter3d(
-            x=[trajectory_GT[0, 0]],
-            y=[trajectory_GT[0, 2]],
-            z=[trajectory_GT[0, 1]],
-            mode='markers+text',
-            marker=dict(size=8, color='green', symbol='circle'),
-            name='Start',
-            text=['Start'],
-            textposition='top center'
-        ))
-
-        # End point
-        fig.add_trace(go.Scatter3d(
-            x=[trajectory_GT[-1, 0]],
-            y=[trajectory_GT[-1, 2]],
-            z=[trajectory_GT[-1, 1]],
-            mode='markers+text',
-            marker=dict(size=8, color='red', symbol='circle'),
-            name='End',
-            text=['End'],
-            textposition='top center'
-        ))
-
-        fig.update_layout(
-            scene=dict(
-                xaxis_title='X (m)',
-                yaxis_title='Z (m)',  # Z as floor axis
-                zaxis_title='Y (m)',  # Y as height
-                xaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
-                yaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
-                zaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
-                aspectmode='data',
-                camera=dict(
-                    eye=dict(x=1, y=-5, z=2)
-                ),
-                bgcolor='rgba(0, 0, 0, 0)'
-            ),
-            title=dict(
-                text='Ground Truth Trajectory (3D)',
-                font=dict(size=22, color='white')
-            ),
-            legend=dict(
-                x=0.02, y=0.98, bgcolor='rgba(255,255,255,0.7)', bordercolor='black'
-            ),
-            margin=dict(l=0, r=0, b=0, t=40)
-        )
-
-        col1.plotly_chart(fig, use_container_width=True)
-        
-    except Exception as e:
-        error_msg = f"Error reading pose file: {str(e)}"
         log_error(error_msg)
         return None
 
@@ -381,6 +374,7 @@ def process_sequence(sequence, show_table, batch_size):
             table_placeholder.empty()
             total_images = len(images)
             VO.reset()
+            bovw.reset()
             
             for i, (img_frame, filename) in enumerate(zip(images, filenames)):
                 # -AddedNew
@@ -394,12 +388,13 @@ def process_sequence(sequence, show_table, batch_size):
                 try:
                     logger.debug(f"Processing frame {i+1}/{total_images}: {filename}")
                     
-                    result_frame, E, F, traj_path, detector_used, map_points = VO.VisualOdometry(
+                    result_frame, E, F, traj_path, detector_used, map_points, desc, kp = VO.VisualOdometry(
                         cv2.imread(img_frame),
                         FeatureDetector=feature_detector,
                         FeatureMatcher=feature_matcher
                     )
-                    
+                    hist = bovw.Histogram(desc)
+                    bovw.historyOfBOVW(visual_word=hist, desc=desc, kp=kp)
                     if traj_path:
                         st.session_state.trajectory = traj_path
 
@@ -461,7 +456,7 @@ def process_sequence(sequence, show_table, batch_size):
                             )
                             # # Add map points to the figure
                         # Create figure
-                        fig = go.Figure(data=[scatter_traj, scatter_gt, scatter_map_points])
+                        fig = go.Figure(data=[scatter_traj, scatter_gt]) # , scatter_map_points
                         fig.update_layout(
                             scene=dict(
                                 xaxis_title='X (m)',
@@ -485,33 +480,21 @@ def process_sequence(sequence, show_table, batch_size):
                             ),
                             margin=dict(l=0, r=0, b=0, t=40)
                         )
-                        # fig2 = go.Figure(data=[scatter_traj, scatter_map_points])
-                        # fig2.update_layout(
-                        #     scene=dict(
-                        #         xaxis_title='X (m)',
-                        #         yaxis_title='Z (m)',  # Z as floor axis
-                        #         zaxis_title='Y (m)',  # Y as height
-                        #         xaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
-                        #         yaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
-                        #         zaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
-                        #         aspectmode='data',
-                        #         camera=dict(
-                        #             eye=dict(x=1, y=-5, z=10)
-                        #         ),
-                        #         bgcolor='rgba(0, 0, 0, 0)'
-                        #     ),
-                        #     title=dict(
-                        #         text='Ground Truth Trajectory (3D)',
-                        #         font=dict(size=22, color='white')
-                        #     ),
-                        #     legend=dict(
-                        #         x=0.02, y=0.98, bgcolor='rgba(255,255,255,0.7)', bordercolor='black'
-                        #     ),
-                        #     margin=dict(l=0, r=0, b=0, t=40)
-                        # )
+                        histogram = go.Figure(data=[go.Bar(x=list(range(len(hist))), y=hist)])
+                        histogram.update_layout(
+                            title="BoVW Histogram",
+                            xaxis_title="Visual Word Index",
+                            yaxis_title="Frequency",
+                            bargap=0.1
+                        )
                         traj_frame1, traj_frame2 = traj_frame.columns(2)
                         traj_frame1.plotly_chart(fig, use_container_width=True)
-                        traj_frame2.metric(str(map_points is None), "No Map Points" if map_points is None else f"{len(map_points)} Map Points")
+                        traj_frame21, traj_frame22 = traj_frame2.columns(2)
+                        traj_frame21.metric(str(map_points is None), "No Map Points" if map_points is None else f"{len(map_points)} Map Points")
+                        loopsDetected = 0
+                        if len(map_points)%20 == 0:
+                            pass
+                        traj_frame2.plotly_chart(histogram, use_container_width=True)
                         # temp_x=map_points_np[:, 0][:, 0],
                         # temp_y=map_points_np[:, 2][:, 2],
                         # temp_z=map_points_np[:, 1][:, 1],
@@ -568,6 +551,9 @@ def process_sequence(sequence, show_table, batch_size):
                     error_msg = f"Error processing {filename} with {feature_detector}: {str(e)}"
                     log_error(error_msg)
                     continue
+                loop_closure = bovw.LoopChecks() 
+                with loopClosure.container():
+                    st.dataframe(loop_closure)               
 
             
             if not st.session_state.poses_dataframe.empty:
@@ -602,6 +588,9 @@ def process_sequence(sequence, show_table, batch_size):
 # ---------------------
 # Run VO - Main Logic
 # ---------------------
+
+trajectory_GT = show_seq_info(calib_file = os.path.join(BASE_DIR, sequence, "calib2.txt"), pose_file = os.path.join(POSE_DIR, f"{sequence}.txt"))
+
 if run_all:
     logger.info("Starting processing for all sequences (00-10)")
     all_mse_results = []
@@ -609,7 +598,7 @@ if run_all:
         info_msg = f"Starting processing for sequence {seq}"
         log_info(info_msg)
         
-        mse_results = process_sequence(seq, show_table, batch_size=batch_size)
+        mse_results = process_sequence(seq, show_table, batch_size=batch_size, trajectory_GT=trajectory_GT)
         if mse_results:
             all_mse_results.extend(mse_results)
     
@@ -624,7 +613,7 @@ if run_all:
 
 elif run_single:
     logger.info(f"Starting single sequence processing for sequence {sequence}")
-    mse_results = process_sequence(sequence, show_table, batch_size=batch_size)
+    mse_results = process_sequence(sequence, show_table, batch_size=batch_size, trajectory_GT=trajectory_GT)
     
     if mse_results:
         mse_df = pd.DataFrame(mse_results)

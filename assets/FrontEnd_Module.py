@@ -2,7 +2,8 @@ import cv2
 import numpy as np
 from io import StringIO
 import random
-from assets.Mapping import LocalMapper, MapPoint, KeyFrame, LocalBundleAdjustment
+from assets.Mapping import LocalMapper, MapPoint, KeyFrame
+from assets.LoopDetection import BOVW
 
 class transformations:
     def __init__(self):
@@ -43,10 +44,10 @@ class CameraMatrices:
         )
         
         if F is None or F.shape != (3, 3):
-            return None, None, None
+            return None, None, None, None, None
             
         if mask is None or len(mask) == 0:
-            return None, None, None
+            return None, None, None, None, None
 
         # Filter inliers
         prevPt_inliers = pts_prev[mask.ravel() == 1]
@@ -54,18 +55,19 @@ class CameraMatrices:
         
         # Need at least 8 points for reliable pose estimation
         if len(prevPt_inliers) < 8 or len(currPt_inliers) < 8:
-            return None, None, None
+            return None, None, None, None, None
         
         # Compute Essential Matrix
-        E = K.T @ F @ K
+        E, mask = cv2.findEssentialMat(prevPt_inliers, currPt_inliers, K, method=cv2.RANSAC, prob=0.999, threshold=1.0)
+        
         
         # Recover pose
         try:
             _, R, t, pose_mask = cv2.recoverPose(E, prevPt_inliers, currPt_inliers, K)
-            return R, t, mask
+            return R, t, mask, E, F
         except cv2.error as e:
             print(f"Error in recoverPose: {e}")
-            return None, None, None
+            return None, None, None, None, None
     
     def triangulate_points(self, pose1, pose2, pts1, pts2, K):
         P1 = np.dot(K, pose1[:3, :])
@@ -185,17 +187,19 @@ class featureMatching:
 
         return good_matches, pts_prev, pts_curr
 
-class Pipeline(transformations, featureDetection, featureMatching, CameraMatrices, LocalMapper, LocalBundleAdjustment):
+class Pipeline(transformations, featureDetection, featureMatching, CameraMatrices, LocalMapper):
     def __init__(self):
         transformations.__init__(self)
         featureDetection.__init__(self)
         featureMatching.__init__(self)
         CameraMatrices.__init__(self)
         LocalMapper.__init__(self)
-        LocalBundleAdjustment.__init__(self)
+        self.loop_detector = BOVW()
+        # LocalBundleAdjustment.__init__(self)
         self.prev_keypoints = None
         self.prev_descriptors = None
         self.prev_frame = None
+        self.prev_pose = np.eye(4)
         self.K = None
         self.current_pose = np.eye(4)  # Current absolute pose
         self.trajectory = [np.eye(4)[:3]]
@@ -248,6 +252,38 @@ class Pipeline(transformations, featureDetection, featureMatching, CameraMatrice
         scale = np.median(depths_prev / np.clip(depths_curr, 1e-6, None))
         return np.clip(scale, 0.1, 10.0)  # Reasonable scale bounds
     
+    # Correcting pose on the basis of loop detection
+    def correct_trajectory_and_map(self, from_idx, to_idx):
+        try:
+            pose_i = self.keyframes[from_idx].pose
+            pose_j = self.keyframes[to_idx].pose
+            T_correction = pose_i @ np.linalg.inv(pose_j)
+
+            # Update keyframe poses
+            for k in range(to_idx, len(self.keyframes)):
+                self.keyframes[k].pose = T_correction @ self.keyframes[k].pose
+
+            # Update trajectory
+            for k in range(to_idx, len(self.trajectory)):
+                T = np.eye(4)
+                T[:3] = self.trajectory[k]
+                T_corr = T_correction @ T
+                self.trajectory[k] = T_corr[:3]
+
+            # Update trajectory path for plotting
+            self.trajectory_path[to_idx:] = [
+                (-kf.pose[0, 3], kf.pose[1, 3], kf.pose[2, 3])
+                for kf in self.keyframes[to_idx:]
+            ]
+
+            # Optional: Transform map points
+            for i in range(to_idx, len(self.map_points)):
+                if self.map_points[i] is not None:
+                    self.map_points[i] = (T_correction[:3, :3] @ self.map_points[i].T).T + T_correction[:3, 3]
+        except Exception as e:
+            print(f"Error correcting trajectory and map: {e}")
+
+
     def VisualOdometry(self, frame, FeatureDetector=None, FeatureMatcher=None): 
         self.frameID += 1
         essential_matrix = fundamental_matrix = None
@@ -265,6 +301,18 @@ class Pipeline(transformations, featureDetection, featureMatching, CameraMatrice
             return frame, None, None, None, FeatureDetector
             
         keypoints, descriptors, processed_frame_fd = result
+
+        # Loop Closure
+        if descriptors is not None and len(descriptors) > 0:
+            visual_word = self.loop_detector.Histogram(descriptors)
+            self.loop_detector.historyOfBOVW(visual_word, descriptors, keypoints)
+    
+            loop_closures = self.loop_detector.LoopChecks()
+            if loop_closures:
+                print(f"🔁 Loop Detected between frames {loop_closures[-1][0]} and {loop_closures[-1][2]}")
+                from_idx = loop_closures[-1][0]   # Earlier matching frame
+                to_idx = loop_closures[-1][2]     # Current frame
+                self.correct_trajectory_and_map(from_idx, to_idx)
 
         # Feature Matching
         if (self.prev_keypoints is not None and 
@@ -316,7 +364,7 @@ class Pipeline(transformations, featureDetection, featureMatching, CameraMatrice
             pose_result = self.EstimatePose(pts_prev, pts_curr, self.K)
             
             if pose_result[0] is not None:
-                R, t, mask = pose_result
+                R, t, mask, essential_matrix, fundamental_matrix = pose_result
                 
                 # Validate motion
                 if self.validate_motion(R, t):
@@ -350,10 +398,12 @@ class Pipeline(transformations, featureDetection, featureMatching, CameraMatrice
                     self.trajectory_path.append((x, y, z))
                 else:
                     print("⚠️ Motion validation failed - skipping frame")
-        if self.frameID % self.keyframe_interval == 0:
-            # Perform local bundle adjustment
-            self.optimize_local_map(self.keyframes, self.map_points)
-        return processed_frame, essential_matrix, fundamental_matrix, self.trajectory_path, FeatureDetector, self.map_points
+        # LBA
+        # if self.frameID % self.keyframe_interval == 0:
+        #     # Perform local bundle adjustment
+        #     self.optimize_local_map(self.keyframes, self.map_points)
+        self.prev_pose = self.current_pose.copy()  # Update previous pose for next frame
+        return processed_frame, essential_matrix, fundamental_matrix, self.trajectory_path, FeatureDetector, self.map_points, self.prev_descriptors, self.prev_keypoints
 
 class KITTIDataset:
     def __init__(self):
