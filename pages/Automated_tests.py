@@ -480,21 +480,18 @@ def process_sequence(sequence, show_table, batch_size, trajectory_GT):
                             ),
                             margin=dict(l=0, r=0, b=0, t=40)
                         )
-                        histogram = go.Figure(data=[go.Bar(x=list(range(len(hist))), y=hist)])
-                        histogram.update_layout(
-                            title="BoVW Histogram",
-                            xaxis_title="Visual Word Index",
-                            yaxis_title="Frequency",
-                            bargap=0.1
-                        )
                         traj_frame1, traj_frame2 = traj_frame.columns(2)
                         traj_frame1.plotly_chart(fig, use_container_width=True)
                         traj_frame21, traj_frame22 = traj_frame2.columns(2)
                         traj_frame21.metric(str(map_points is None), "No Map Points" if map_points is None else f"{len(map_points)} Map Points")
-                        loopsDetected = 0
-                        if len(map_points)%20 == 0:
-                            pass
-                        traj_frame2.plotly_chart(histogram, use_container_width=True)
+                    histogram = go.Figure(data=[go.Bar(x=list(range(len(hist))), y=hist)])
+                    histogram.update_layout(
+                        title="BoVW Histogram",
+                        xaxis_title="Visual Word Index",
+                        yaxis_title="Frequency",
+                        bargap=0.1
+                    )
+                    traj_frame2.plotly_chart(histogram, use_container_width=True)
                         # temp_x=map_points_np[:, 0][:, 0],
                         # temp_y=map_points_np[:, 2][:, 2],
                         # temp_z=map_points_np[:, 1][:, 1],
@@ -589,7 +586,7 @@ def process_sequence(sequence, show_table, batch_size, trajectory_GT):
 # Run VO - Main Logic
 # ---------------------
 
-trajectory_GT = show_seq_info(calib_file = os.path.join(BASE_DIR, sequence, "calib2.txt"), pose_file = os.path.join(POSE_DIR, f"{sequence}.txt"))
+
 
 if run_all:
     logger.info("Starting processing for all sequences (00-10)")
@@ -597,7 +594,7 @@ if run_all:
     for seq in [f"{i:02d}" for i in range(11)]:
         info_msg = f"Starting processing for sequence {seq}"
         log_info(info_msg)
-        
+        trajectory_GT = show_seq_info(calib_file = os.path.join(BASE_DIR, seq, "calib2.txt"), pose_file = os.path.join(POSE_DIR, f"{seq}.txt"))
         mse_results = process_sequence(seq, show_table, batch_size=batch_size, trajectory_GT=trajectory_GT)
         if mse_results:
             all_mse_results.extend(mse_results)
@@ -613,6 +610,7 @@ if run_all:
 
 elif run_single:
     logger.info(f"Starting single sequence processing for sequence {sequence}")
+    trajectory_GT = show_seq_info(calib_file = os.path.join(BASE_DIR, sequence, "calib2.txt"), pose_file = os.path.join(POSE_DIR, f"{sequence}.txt"))
     mse_results = process_sequence(sequence, show_table, batch_size=batch_size, trajectory_GT=trajectory_GT)
     
     if mse_results:
@@ -627,6 +625,7 @@ elif run_single:
 
 else:
     info_msg = "Toggle 'Run All Sequences' or 'Run Single Sequence' to start processing."
+    trajectory_GT = show_seq_info(calib_file = os.path.join(BASE_DIR, sequence, "calib2.txt"), pose_file = os.path.join(POSE_DIR, f"{sequence}.txt"))
     log_info(info_msg)
     table_placeholder.empty()
 

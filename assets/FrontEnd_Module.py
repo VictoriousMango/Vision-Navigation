@@ -276,6 +276,9 @@ class Pipeline(transformations, featureDetection, featureMatching, CameraMatrice
                 for kf in self.keyframes[to_idx:]
             ]
 
+            self.current_pose = T_correction @ self.current_pose
+            self.prev_pose = self.current_pose.copy()
+            
             # Optional: Transform map points
             for i in range(to_idx, len(self.map_points)):
                 if self.map_points[i] is not None:
