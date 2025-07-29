@@ -307,8 +307,8 @@ class Pipeline(transformations, featureDetection, featureMatching, CameraMatrice
 
         # Loop Closure
         if descriptors is not None and len(descriptors) > 0:
-            visual_word = self.loop_detector.Histogram(descriptors)
-            self.loop_detector.historyOfBOVW(visual_word, descriptors, keypoints)
+            self.visual_word = self.loop_detector.Histogram(descriptors)
+            self.loop_detector.historyOfBOVW(self.visual_word, descriptors, keypoints)
     
             loop_closures = self.loop_detector.LoopChecks()
             if loop_closures:

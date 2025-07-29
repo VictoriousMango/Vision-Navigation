@@ -1,6 +1,8 @@
 import numpy as np
+import pandas as pd
+import plotly.express as px
 import cv2
-import g2o
+import plotly.graph_objects as go
 
 class LocalMapper:
     def __init__(self):
@@ -40,62 +42,88 @@ class KeyFrame:
         self.frame_id = frame_id
         self.map_points = []
 
-class LocalBundleAdjustment:
+class Animated3DTrajectory:
     def __init__(self):
-        self.keyframe_interval = 10000 # Temporal Threshold
-        self.optimizer = g2o.SparseOptimizer()
-        # Create a linear solver
-        solver = g2o.BlockSolverSE3(g2o.LinearSolverDenseSE3())
-        # Create the optimization algorithm with the solver
-        algorithm = g2o.OptimizationAlgorithmLevenberg(solver)
-        self.optimizer.set_algorithm(algorithm)
-        
-    def optimize_local_map(self, keyframes, map_points):
-        """Optimize poses and 3D points using bundle adjustment"""
-        # Add camera poses as vertices
-        for i, kf in enumerate(keyframes):
-            pose_vertex = g2o.VertexSE3Expmap()
-            pose_vertex.set_id(i)
-            # Extract rotation (3x3) and translation (3x1) from 4x4 pose matrix
-            R = kf.pose[:3, :3]
-            t = kf.pose[:3, 3].reshape(3, 1)
-            pose_vertex.set_estimate(g2o.SE3Quat(R, t))
-            self.optimizer.add_vertex(pose_vertex)
-        
-        # Add 3D points as vertices and create projection edges
-        point_id = len(keyframes)
-        for mp in map_points:
-            point_vertex = g2o.VertexPointXYZ()
-            point_vertex.set_id(point_id)
-            point_vertex.set_estimate(mp)
-            self.optimizer.add_vertex(point_vertex)
-            point_id += 1
-class PoseGraphOptimizer:
-    def __init__(self):
-        self.pose_graph = g2o.SparseOptimizer()
-        self.pose_graph.set_algorithm(g2o.OptimizationAlgorithmLevenberg())
-        
-    def add_pose_vertex(self, pose_id, pose):
-        """Add a pose vertex to the graph"""
-        vertex = g2o.VertexSE3Expmap()
-        vertex.set_id(pose_id)
-        vertex.set_estimate(g2o.SE3Quat(pose))
-        self.pose_graph.add_vertex(vertex)
-        
-    def add_odometry_edge(self, id1, id2, measurement, information):
-        """Add odometry constraint between consecutive poses"""
-        edge = g2o.EdgeSE3Expmap()
-        edge.set_vertex(0, self.pose_graph.vertex(id1))
-        edge.set_vertex(1, self.pose_graph.vertex(id2))
-        edge.set_measurement(g2o.SE3Quat(measurement))
-        edge.set_information(information)
-        self.pose_graph.add_edge(edge)
-        
-    def add_loop_closure_edge(self, id1, id2, measurement, information):
-        """Add loop closure constraint"""
-        edge = g2o.EdgeSE3Expmap()
-        edge.set_vertex(0, self.pose_graph.vertex(id1))
-        edge.set_vertex(1, self.pose_graph.vertex(id2))
-        edge.set_measurement(g2o.SE3Quat(measurement))
-        edge.set_information(information)
-        self.pose_graph.add_edge(edge)
+        pass
+    def lst_to_df(self, trajectory):
+        """Convert trajectory list to DataFrame"""
+        df = pd.DataFrame(trajectory, columns=['x', 'y', 'z'])
+        df['frame_index'] = df.index
+        return df
+    def plotly_chart(self, df):
+        # Plotly 3D Trajectory Plot (Beautiful)
+        fig = px.scatter_3d(df, 
+                                x='x', 
+                                y='z',  
+                                z='y',
+                                animation_frame='frame_index',  # Note: correct column name
+                                title='Animated Ground Truth Trajectory (3D)',
+                                color_discrete_sequence=['red'])
+        fig.add_trace(go.Scatter3d(
+            x=df['x'],
+            y=df['z'],  # Z as horizontal axis (floor)
+            z=df['y'],  # Y as height
+            mode='markers',
+            marker=dict(size=1, color='green'),
+            name='Keyframes'
+        ))
+
+
+        fig.update_layout(
+            scene=dict(
+                xaxis_title='X (m)',
+                yaxis_title='Z (m)',  # Z as floor axis
+                zaxis_title='Y (m)',  # Y as height
+                xaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                yaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                zaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                aspectmode='data',
+                camera=dict(
+                    eye=dict(x=1, y=-5, z=2)
+                ),
+                bgcolor='rgba(0, 0, 0, 0)'
+            ),
+            title=dict(
+                text='Ground Truth Trajectory (3D)',
+                font=dict(size=11, color='white')
+            ),
+            legend=dict(
+                x=0.02, y=0.98, bgcolor='rgba(255,255,255,0.7)', bordercolor='black'
+            ),
+            margin=dict(l=0, r=0, b=0, t=40)
+        )
+
+        return fig
+    
+    def static_chart(self, df):
+        """Static 3D Trajectory Plot"""
+        fig = px.line_3d(df, 
+                                x='x', 
+                                y='z',  
+                                z='y',
+                                title='Trajectory (3D)',
+                                color_discrete_sequence=['red'])
+        fig.update_layout(
+            scene=dict(
+                xaxis_title='X (m)',
+                yaxis_title='Z (m)',  # Z as floor axis
+                zaxis_title='Y (m)',  # Y as height
+                xaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                yaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                zaxis=dict(showgrid=True, gridcolor='white', zeroline=False),
+                aspectmode='data',
+                camera=dict(
+                    eye=dict(x=1, y=-5, z=2)
+                ),
+                bgcolor='rgba(0, 0, 0, 0)'
+            ),
+            title=dict(
+                text='Ground Truth Trajectory (3D)',
+                font=dict(size=11, color='white')
+            ),
+            legend=dict(
+                x=0.02, y=0.98, bgcolor='rgba(255,255,255,0.7)', bordercolor='black'
+            ),
+            margin=dict(l=0, r=0, b=0, t=40)
+        )
+        return fig
