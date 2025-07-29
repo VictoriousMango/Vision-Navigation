@@ -46,15 +46,15 @@ Vision-Navigation/
 ## 🧠 VSLAM Workflow
 
 ```mermaid
-flowchart LR
+graph LR
     A[Input RGB Images] --> B[Feature Detection]
     B --> C[Feature Matching]
-    C --> D[Pose Estimation (E/F Matrix)]
+    C --> D[Pose Estimation: E or F Matrix]
     D --> E[Triangulation]
     E --> F[Local Mapping]
-    F --> G[Loop Detection (BoVW)]
+    F --> G[Loop Detection using BoVW]
     G --> H[Trajectory Optimization]
-    H --> I[3D Map + Trajectory Output]
+    H --> I[3D Map and Trajectory Output]
 ```
 
 ---
