@@ -192,7 +192,7 @@ class AdvancedAnalysis:
         if not comparative_df.empty:
             # Normalize metrics to 0-1 scale
             normalized_df = comparative_df.copy()
-            score_metrics = ["Total_Error", "RMSE", "Total Time Taken"]
+            score_metrics = ["Total_Error", "RMSE", "Total Time Taken", "Error_Per_Meter"]
             
             for metric in score_metrics:
                 if metric in normalized_df.columns:
@@ -207,16 +207,19 @@ class AdvancedAnalysis:
             normalized_df["Composite_Score"] = (
                 normalized_df.get("Total_Error_norm", 0) + 
                 normalized_df.get("RMSE_norm", 0) +
-                normalized_df.get("Total Time Taken_norm", 0)
+                normalized_df.get("Total Time Taken_norm", 0) +
+                normalized_df.get("Error_Per_Meter_norm", 0) 
             ) / len(score_metrics)
             
             overall_best = normalized_df.nsmallest(top_n, "Composite_Score")
-            rankings["Overall"] = overall_best[["Sequence", "Feature_Detector", "Composite_Score", "Total_Error", "RMSE", "Total Time Taken"]].to_dict('records')
+            rankings["Overall"] = overall_best[["Sequence", "Feature_Detector", "Composite_Score", "Total_Error", "RMSE", "Total Time Taken", "Error_Per_Meter"]].to_dict('records')
         
         return rankings
 
 class VisualizationEngine:
     """Advanced visualization with interactive plots"""
+    def __init__(self):
+        self.df = None
     
     @staticmethod
     def create_trajectory_comparison(data: pd.DataFrame) -> go.Figure:
@@ -319,15 +322,22 @@ class VisualizationEngine:
         
         return fig
     
-    @staticmethod
-    def create_comparative_heatmap(comparative_df: pd.DataFrame, values: str) -> go.Figure:
+    # @staticmethod
+    def create_comparative_heatmap(self, comparative_df: pd.DataFrame, values: str) -> go.Figure:
         """Create heatmap comparing feature detectors across sequences"""
         if comparative_df.empty:
             return go.Figure()
         
         # Pivot data for heatmap
         pivot_data = comparative_df.pivot(index='Feature_Detector', columns='Sequence', values=values)
-        
+        if self.df is None:
+            self.df = pivot_data.mean(axis=1).reset_index()
+            self.df.columns = ['Feature_Detector', f"Avg {values}"]
+        else:
+            metric_series = pivot_data.mean(axis=1)
+            metric_series.name = f"Avg {values}"  # Set the name to the metric being calculated
+            metric_df = metric_series.reset_index()  # Convert Series to DataFrame for merging
+            self.df = pd.merge(self.df, metric_df, on='Feature_Detector', how='outer')
         fig = go.Figure(data=go.Heatmap(
             z=pivot_data.values,
             x=pivot_data.columns,
@@ -460,10 +470,14 @@ def main():
         # Heatmap visualization
         st.subheader("🌡️ Performance Heatmap")
         col1, col2 = st.columns(2)
-        heatmap_fig_TotalError = viz_engine.create_comparative_heatmap(comparative_df, 'Total_Error')
+        heatmap_fig_TotalError = viz_engine.create_comparative_heatmap(comparative_df=comparative_df, values='Total_Error')
         col1.plotly_chart(heatmap_fig_TotalError, use_container_width=True)
-        heatmap_figTimeTaken = viz_engine.create_comparative_heatmap(comparative_df, 'Total Time Taken')
+        heatmap_figTimeTaken = viz_engine.create_comparative_heatmap(comparative_df=comparative_df, values='Total Time Taken')
         col2.plotly_chart(heatmap_figTimeTaken, use_container_width=True)
+        heatmap_figTimeTaken = viz_engine.create_comparative_heatmap(comparative_df=comparative_df, values='Error_Per_Meter')
+        col1.plotly_chart(heatmap_figTimeTaken, use_container_width=True)
+        col2.subheader("📊 Feature Detector Performance")
+        col2.dataframe(viz_engine.df, use_container_width=True)
         
         # Statistical summary
         st.subheader("📈 Statistical Summary")

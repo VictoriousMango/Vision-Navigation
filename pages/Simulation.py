@@ -359,7 +359,7 @@ with Results.container():
                 #     if st.button("🗑️ Delete Results", key=f"delete_{selected_sequence}"):
                 #         if st.button("⚠️ Confirm Delete", key=f"confirm_delete_{selected_sequence}"):
                 #             try:
-                #                 os.remove(f"./results/simulation/{selected_sequence}_trajectory_estimated.csv")
+                #                 os.remove(f"./results/simulation/{selected_sequence}_trajectory_estimated.csv" )
                 #                 st.success(f"Deleted results for {selected_sequence}")
                 #                 st.rerun()
                 #             except Exception as e:
